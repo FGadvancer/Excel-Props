@@ -2,41 +2,66 @@ package main
 
 import (
 	"Excel-Props/pkg/db"
+	"Excel-Props/pkg/log"
+	"Excel-Props/pkg/utils"
 	"fmt"
 	"github.com/tealeg/xlsx"
 	"os"
 )
-func main()  {
+
+func main() {
 	path, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(path)
-	f, err := xlsx.OpenFile(path+"/config"+"/source1.xlsx")
+	f, err := xlsx.OpenFile(path + "/config" + "/source1.xlsx")
 	if err != nil {
-		fmt.Println("excel文件读取错误")
+		fmt.Println("source 1 excel文件读取错误")
 		panic(err)
 	}
 	//fmt.Println(len())
-
-   fmt.Println(f.Sheets[0].MaxRow,f.Sheets[0].MaxCol)
-
-	for i := 0; i <f.Sheets[0].MaxRow ; i++ {
-		temp:=new(db.Template1)
-		for j := 0; j < f.Sheets[0].MaxCol ; j++ {
-			//if i != 0 {
-			//	f.Sheets[0].Cell(i,j).Value = "1"
-			//}
-			if i>2 && {
-				(j==2||j==3||j==9||j==10)
-				if  != nil {
-					
-				}
-				fmt.Print(f.Sheets[0].Cell(i,j).Value)
-				fmt.Print("  ")
+	log.Debug("main", "get source 1 file info is:", f.Sheets[0].MaxRow, f.Sheets[0].MaxCol)
+	var list []*db.Template1
+	for i := 0; i < f.Sheets[0].MaxRow; i++ {
+		temp := new(db.Template1)
+		if i > 2 {
+			if f.Sheets[0].Cell(i, 9).Value != "" {
+				temp.SheetID = f.Sheets[0].Cell(i, 9).Value
+				temp.MachineKind = f.Sheets[0].Cell(i, 2).Value
+				temp.ProductName = f.Sheets[0].Cell(i, 3).Value
+				temp.Code = f.Sheets[0].Cell(i, 10).Value
 			}
 		}
-		fmt.Println()
+		list = append(list, temp)
+
+	}
+	f2, err := xlsx.OpenFile(path + "/config" + "/source2.xlsx")
+	if err != nil {
+		fmt.Println("source 2 excel文件读取错误")
+		panic(err)
+	}
+	log.Debug("main", "get source 2 file info is:", f2.Sheets[0].MaxRow, f.Sheets[0].MaxCol)
+	var list2 []*db.Template2
+	for i := 0; i < f.Sheets[0].MaxRow; i++ {
+		temp := new(db.Template2)
+		if i > 0 {
+			if f.Sheets[0].Cell(i, 5).Value != "" {
+				temp.MaterialKey = f.Sheets[0].Cell(i, 5).Value
+				temp.MaterialCategory = f.Sheets[0].Cell(i, 6).Value
+				temp.MaterialName = f.Sheets[0].Cell(i, 7).Value
+				temp.MaterialSubstance = f.Sheets[0].Cell(i, 8).Value
+				temp.MaterialStandard = f.Sheets[0].Cell(i, 9).Value
+				temp.Quantity = utils.StringToInt32(f.Sheets[0].Cell(i, 10).Value)
+				temp.MaterialUnit = f.Sheets[0].Cell(i, 11).Value
+				temp.ProcessingCategory = f.Sheets[0].Cell(i, 12).Value
+				temp.RemarkOne = f.Sheets[0].Cell(i, 13).Value
+				temp.RemarkTwo = f.Sheets[0].Cell(i, 14).Value
+				temp.IsPurchase = f.Sheets[0].Cell(i, 15).Value
+				temp.StandardCraft = f.Sheets[0].Cell(i, 16).Value
+			}
+		}
+		list2 = append(list2, temp)
 
 	}
 

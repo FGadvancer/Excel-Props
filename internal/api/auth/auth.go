@@ -11,14 +11,13 @@ import (
 )
 
 func Login(c *gin.Context) {
-	operationID:=c.Request.Header.Get("operationID")
-	params := api.LoginReq{}
-	if err := c.BindJSON(&params); err != nil {
-		log.NewError(operationID, err.Error())
-		c.JSON(http.StatusOK, gin.H{"errCode":, "errMsg":})
+	operationID := c.Request.Header.Get("operationID")
+	req := api.LoginReq{}
+	resp := api.LoginResp{}
+
+	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
-
 
 	var ok bool
 	var errInfo string
@@ -51,6 +50,8 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 func ParseToken(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	token := c.Request.Header.Get("token")
 	params := api.ForceLogoutReq{}
 	if err := c.BindJSON(&params); err != nil {
 		errMsg := " BindJSON failed " + err.Error()

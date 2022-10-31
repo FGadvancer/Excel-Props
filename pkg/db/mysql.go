@@ -14,6 +14,7 @@ import (
 type mysqlDB struct {
 	sync.RWMutex
 	db *gorm.DB
+	Register Register
 }
 
 type Writer struct{}
