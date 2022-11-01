@@ -8,9 +8,9 @@ type (
 	LoginResp struct {
 		CommResp
 		Data struct {
-			Token    string `json:"token"`
-			UserName string `json:"userName"`
-		} `json:"data"`
+			Token    string `json:"token,omitempty"`
+			UserName string `json:"userName,omitempty"`
+		} `json:"data,omitempty"`
 	}
 	PareTokenResp struct {
 		CommResp
