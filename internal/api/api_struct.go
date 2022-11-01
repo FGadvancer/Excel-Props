@@ -16,6 +16,9 @@ type (
 	}
 	PareTokenResp struct {
 		CommResp
+		Data struct {
+			UserName string `json:"userName,omitempty"`
+		} `json:"data,omitempty"`
 	}
 	ExcelFileUploadReq struct {
 		SheetID   string        `json:"sheetID" binding:"required"`

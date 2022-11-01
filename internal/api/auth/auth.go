@@ -51,7 +51,7 @@ func ParseToken(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	_, err = db.DB.MysqlDB.GetAccountInfo(userID)
+	user, err := db.DB.MysqlDB.GetAccountInfo(userID)
 	if err != nil {
 		log.NewError(operationID, "not user info", err.Error())
 		resp.ErrCode = constant.NotUserInfo
@@ -59,5 +59,6 @@ func ParseToken(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+	resp.Data.UserName = user.UserName
 	c.JSON(http.StatusOK, resp)
 }
