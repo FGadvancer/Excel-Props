@@ -20,7 +20,7 @@ redis:
   enableCluster: false #如果外部redis以集群方式启动，需要打开此开关
 
 api:
-  apiPort: [ 45000 ] #api服务端口，默认即可，需要开放此端口或做nginx转发
+  apiPort: [ 45001 ] #api服务端口，默认即可，需要开放此端口或做nginx转发
   listenIP: 0.0.0.0
 manager:
   #app管理员userID和对应的secret 用于客户端登录
