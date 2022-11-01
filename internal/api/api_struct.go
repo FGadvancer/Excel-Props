@@ -2,7 +2,7 @@ package api
 
 type (
 	LoginReq struct {
-		UserID   string `json:"userId" binding:"required"`
+		UserID   string `json:"userID" binding:"required"`
 		Password string `json:"password" binding:"required"`
 	}
 	LoginResp struct {
