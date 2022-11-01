@@ -46,28 +46,29 @@ func main() {
 		log.Error("main", "source 2 excel read file error:", err.Error())
 		panic(err)
 	}
-	page := 0
-	log.Debug("main", "get source 2 file info is:", f.Sheets[page].MaxRow, f.Sheets[page].MaxCol)
+	s := f.Sheet["塑胶模-新BOM"]
+	//page := 0
+	log.Debug("main", "get source 2 file info is:", s.MaxRow, s.MaxCol)
 	var list2 []*db.Template2
-	fmt.Println("get source 2 file info", f.Sheets[page].MaxRow, f.Sheets[page].MaxCol)
-	for i := 0; i < f.Sheets[page].MaxRow; i++ {
+	fmt.Println("get source 2 file info", s.MaxRow, s.MaxCol)
+	for i := 0; i < s.MaxRow; i++ {
 		temp := new(db.Template2)
 		if i > 0 {
-			if f.Sheets[page].Cell(i, 0).Value != "" && f.Sheets[page].Cell(i, 4).Value != "" {
-				temp.MaterialKey = f.Sheets[page].Cell(i, 0).Value
+			if s.Cell(i, 0).Value != "" && s.Cell(i, 4).Value != "" {
+				temp.MaterialKey = s.Cell(i, 0).Value
 
-				temp.MaterialCategory = f.Sheets[page].Cell(i, 1).Value
-				temp.MaterialName = f.Sheets[page].Cell(i, 2).Value
-				temp.MaterialSubstance = f.Sheets[page].Cell(i, 3).Value
-				temp.MaterialStandard = f.Sheets[page].Cell(i, 4).Value
-				temp.Quantity = utils.StringToInt32(f.Sheets[page].Cell(i, 5).Value)
-				temp.MaterialUnit = f.Sheets[page].Cell(i, 6).Value
-				temp.ProcessingCategory = f.Sheets[page].Cell(i, 7).Value
-				temp.RemarkOne = f.Sheets[page].Cell(i, 8).Value
-				temp.RemarkTwo = f.Sheets[page].Cell(i, 9).Value
-				temp.IsPurchase = f.Sheets[page].Cell(i, 10).Value
-				temp.StandardCraft = f.Sheets[page].Cell(i, 11).Value
-				fmt.Println(f.Sheets[page].Cell(i, 0).Value)
+				temp.MaterialCategory = s.Cell(i, 1).Value
+				temp.MaterialName = s.Cell(i, 2).Value
+				temp.MaterialSubstance = s.Cell(i, 3).Value
+				temp.MaterialStandard = s.Cell(i, 4).Value
+				temp.Quantity = utils.StringToInt32(s.Cell(i, 5).Value)
+				temp.MaterialUnit = s.Cell(i, 6).Value
+				temp.ProcessingCategory = s.Cell(i, 7).Value
+				temp.RemarkOne = s.Cell(i, 8).Value
+				temp.RemarkTwo = s.Cell(i, 9).Value
+				temp.IsPurchase = s.Cell(i, 10).Value
+				temp.StandardCraft = s.Cell(i, 11).Value
+				fmt.Println(s.Cell(i, 0).Value)
 			}
 		}
 		list2 = append(list2, temp)
