@@ -21,8 +21,8 @@ func NewTemplate1(DB *gorm.DB) *Template1 {
 
 func (t *Template1) ImportDataToTemplate1(data []*Template1) error {
 	for _, v := range data {
-		user := Register{}
-		if e := DB.MysqlDB.db.Model(&Template1{}).Where("sheet_id = ? ", v.SheetID).Take(&user).Error; e != nil {
+		t := Template1{}
+		if e := DB.MysqlDB.db.Model(&Template1{}).Where("sheet_id = ? ", v.SheetID).Take(&t).Error; e != nil {
 			fmt.Println("new sheetID find : ", v, e.Error())
 			if err := DB.MysqlDB.db.Model(v).Create(v).Error; err != nil {
 				fmt.Println("import sheet  db error  : ", v, e.Error())
