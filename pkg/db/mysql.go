@@ -2,6 +2,7 @@ package db
 
 import (
 	"Excel-Props/pkg/config"
+	"Excel-Props/pkg/utils"
 	"fmt"
 	"sync"
 	"time"
@@ -14,7 +15,11 @@ import (
 type mysqlDB struct {
 	sync.RWMutex
 	db *gorm.DB
-	Register Register
+	*Template1
+	*Template2
+	*Register
+	*Sheet
+	*SheetAndMaterial
 }
 
 type Writer struct{}
@@ -83,19 +88,46 @@ func initMysqlDB() {
 
 	fmt.Println("open mysql ok ", dsn)
 	db.AutoMigrate(
-		&Register{})
+		&Register{}, &Sheet{}, &SheetAndMaterial{}, &Template1{}, &Template2{})
 	db.Set("gorm:table_options", "CHARSET=utf8")
 	db.Set("gorm:table_options", "collation=utf8_unicode_ci")
 
-	if !db.Migrator().HasTable(&Friend{}) {
-		fmt.Println("CreateTable Friend")
-		db.Migrator().CreateTable(&Friend{})
+	if !db.Migrator().HasTable(&Register{}) {
+		fmt.Println("CreateTable Register")
+		db.Migrator().CreateTable(&Register{})
+	}
+	if !db.Migrator().HasTable(&Sheet{}) {
+		fmt.Println("CreateTable Sheet")
+		db.Migrator().CreateTable(&Sheet{})
+	}
+	if !db.Migrator().HasTable(&SheetAndMaterial{}) {
+		fmt.Println("CreateTable SheetAndMaterial")
+		db.Migrator().CreateTable(&SheetAndMaterial{})
+	}
+	if !db.Migrator().HasTable(&Template1{}) {
+		fmt.Println("CreateTable Template1")
+		db.Migrator().CreateTable(&Template1{})
+	}
+	if !db.Migrator().HasTable(&Template2{}) {
+		fmt.Println("CreateTable Template2")
+		db.Migrator().CreateTable(&Template2{})
+	}
+	DB.MysqlDB.db = db
+	DB.MysqlDB.Register = NewRegister(db)
+	DB.MysqlDB.Template1 = NewTemplate1(db)
+	DB.MysqlDB.Template2 = NewTemplate2(db)
+	for i, v := range config.Config.Manager.AppManagerUid {
+		user := Register{}
+		if e := DB.MysqlDB.db.Model(&Register{}).Where("account = ? ", v).Take(&user).Error; e != nil {
+			fmt.Println("admin find : ", v, e.Error())
+			user.Account = config.Config.Manager.AppManagerUid[i]
+			user.Password = utils.Md5(config.Config.Manager.Secrets[i])
+			user.CreateTime = time.Now()
+			if err := DB.MysqlDB.db.Model(&user).Create(&user).Error; err != nil {
+				fmt.Println("init db error  : ", v, e.Error())
+			}
+		}
 	}
 
-	DB.MysqlDB.db = db
 	return
-}
-
-func (m *mysqlDB) DefaultGormDB() *gorm.DB {
-	return DB.MysqlDB.db
 }

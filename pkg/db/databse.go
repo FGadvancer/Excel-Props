@@ -4,7 +4,7 @@ var DB DataBases
 
 type DataBases struct {
 	MysqlDB mysqlDB
-	Rdb redis_model.DB
+	redis   *Redis
 }
 
 func key(dbAddress, dbName string) string {
@@ -14,6 +14,6 @@ func key(dbAddress, dbName string) string {
 func init() {
 	//mysql init
 	initMysqlDB()
-	initRedis(&DB.Rdb)
+	DB.redis = initRedis()
 
 }

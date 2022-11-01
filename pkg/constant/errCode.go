@@ -1,5 +1,6 @@
 package constant
 
 const (
-	ArgsErr = 100
+	ArgsErr     = 100
+	NotUserInfo = 101
 )

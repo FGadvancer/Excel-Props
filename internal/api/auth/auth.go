@@ -3,6 +3,8 @@ package auth
 import (
 	"Excel-Props/internal/api"
 	"Excel-Props/pkg/config"
+	"Excel-Props/pkg/constant"
+	"Excel-Props/pkg/db"
 	"Excel-Props/pkg/log"
 	"Excel-Props/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -18,7 +20,12 @@ func Login(c *gin.Context) {
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
-
+	user, err := db.GetAccountInfo(req.UserID)
+	if err != nil {
+		log.NewError(operationID, "not user info", err.Error())
+		resp.ErrCode = constant.NotUserInfo
+		resp.ErrMsg = "not user info"
+	}
 	var ok bool
 	var errInfo string
 	ok, req.OpUserID, errInfo = token_verify.GetUserIDFromToken(c.Request.Header.Get("token"), req.OperationID)
