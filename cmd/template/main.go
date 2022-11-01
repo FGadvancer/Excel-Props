@@ -53,19 +53,19 @@ func main() {
 	for i := 0; i < f.Sheets[page].MaxRow; i++ {
 		temp := new(db.Template2)
 		if i > 0 {
-			if f.Sheets[page].Cell(i, 5).Value != "" && f.Sheets[page].Cell(i, 9).Value != "" {
-				temp.MaterialKey = f.Sheets[page].Cell(i, 5).Value
-				temp.MaterialCategory = f.Sheets[page].Cell(i, 6).Value
-				temp.MaterialName = f.Sheets[page].Cell(i, 7).Value
-				temp.MaterialSubstance = f.Sheets[page].Cell(i, 8).Value
-				temp.MaterialStandard = f.Sheets[page].Cell(i, 9).Value
-				temp.Quantity = utils.StringToInt32(f.Sheets[page].Cell(i, 10).Value)
-				temp.MaterialUnit = f.Sheets[page].Cell(i, 11).Value
-				temp.ProcessingCategory = f.Sheets[page].Cell(i, 12).Value
-				temp.RemarkOne = f.Sheets[page].Cell(i, 13).Value
-				temp.RemarkTwo = f.Sheets[page].Cell(i, 14).Value
-				temp.IsPurchase = f.Sheets[page].Cell(i, 15).Value
-				temp.StandardCraft = f.Sheets[page].Cell(i, 16).Value
+			if f.Sheets[page].Cell(i, 0).Value != "" && f.Sheets[page].Cell(i, 4).Value != "" {
+				temp.MaterialKey = f.Sheets[page].Cell(i, 0).Value
+				temp.MaterialCategory = f.Sheets[page].Cell(i, 1).Value
+				temp.MaterialName = f.Sheets[page].Cell(i, 2).Value
+				temp.MaterialSubstance = f.Sheets[page].Cell(i, 3).Value
+				temp.MaterialStandard = f.Sheets[page].Cell(i, 4).Value
+				temp.Quantity = utils.StringToInt32(f.Sheets[page].Cell(i, 5).Value)
+				temp.MaterialUnit = f.Sheets[page].Cell(i, 6).Value
+				temp.ProcessingCategory = f.Sheets[page].Cell(i, 7).Value
+				temp.RemarkOne = f.Sheets[page].Cell(i, 8).Value
+				temp.RemarkTwo = f.Sheets[page].Cell(i, 9).Value
+				temp.IsPurchase = f.Sheets[page].Cell(i, 10).Value
+				temp.StandardCraft = f.Sheets[page].Cell(i, 11).Value
 			}
 		}
 		list2 = append(list2, temp)
