@@ -7,8 +7,8 @@ import (
 
 //模号对应料件表
 type SheetAndMaterial struct {
-	SheetID            string    `gorm:"column:sheet_id;primary_key;type:varchar(64)" json:"sheetID"`
-	MaterialKey        string    `gorm:"column:material_key;primary_key;type:varchar(64)" json:"materialKey"`
+	SheetID            string    `gorm:"column:sheet_id;primary_key;type:char(32)" json:"sheetID"`
+	MaterialKey        string    `gorm:"column:material_key;primary_key;type:char(32)" json:"materialKey"`
 	MaterialCategory   string    `gorm:"column:material_category;type:varchar(64)" json:"materialCategory"`
 	MaterialName       string    `gorm:"column:material_name;type:varchar(64)" json:"materialName"`
 	MaterialSubstance  string    `gorm:"column:material_substance;type:varchar(64)" json:"materialSubstance"`
