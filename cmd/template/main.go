@@ -41,7 +41,6 @@ func main() {
 		log.Error("main", "source 1 excel import file err:", err.Error())
 		panic(err)
 	}
-	f = nil
 	f, err = xlsx.OpenFile(path + "/source2.xlsx")
 	if err != nil {
 		log.Error("main", "source 2 excel read file error:", err.Error())
@@ -50,7 +49,7 @@ func main() {
 	page := 1
 	log.Debug("main", "get source 2 file info is:", f.Sheets[page].MaxRow, f.Sheets[page].MaxCol)
 	var list2 []*db.Template2
-
+	fmt.Println("get source 2 file info", f.Sheets[page].MaxRow, f.Sheets[page].MaxCol)
 	for i := 0; i < f.Sheets[page].MaxRow; i++ {
 		temp := new(db.Template2)
 		if i > 0 {
