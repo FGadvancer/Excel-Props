@@ -51,7 +51,7 @@ func main() {
 	for i := 0; i < f.Sheets[0].MaxRow; i++ {
 		temp := new(db.Template2)
 		if i > 0 {
-			if f.Sheets[0].Cell(i, 5).Value != "" && f.Sheets[0].Cell(i, 9).Value != "" {
+			if f.Sheets[1].Cell(i, 5).Value != "" && f.Sheets[0].Cell(i, 9).Value != "" {
 				temp.MaterialKey = f.Sheets[0].Cell(i, 5).Value
 				temp.MaterialCategory = f.Sheets[0].Cell(i, 6).Value
 				temp.MaterialName = f.Sheets[0].Cell(i, 7).Value
