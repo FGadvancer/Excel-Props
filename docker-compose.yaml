@@ -4,7 +4,7 @@ services:
   mysql:
     image: mysql:5.7
     ports:
-      - 13370:3306
+      - 45002:3306
     container_name: mysql-1
     volumes:
       - ./components/mysql/data:/var/lib/mysql
