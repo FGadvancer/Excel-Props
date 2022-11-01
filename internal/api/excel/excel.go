@@ -147,6 +147,9 @@ func FileUpload(c *gin.Context) {
 				a = append(a, b...)
 				oldMaterialInfo.Quantity = oldMaterialInfo.Quantity + material.Quantity
 				oldMaterialInfo.SubMaterialKey = utils.StructToJsonString(utils.RemoveRepeatedStringInList(a))
+				oldMaterialInfo.LastModifyCount = material.LastModifyCount
+				oldMaterialInfo.LastModifierUserID = material.LastModifierUserID
+				oldMaterialInfo.LastModifyTime = material.LastModifyTime
 				newErr := db.DB.MysqlDB.UpdateSheetAndMaterial(oldMaterialInfo)
 				if newErr != nil {
 					tx.Rollback()
