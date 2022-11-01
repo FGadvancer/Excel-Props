@@ -15,7 +15,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(path)
-	f, err := xlsx.OpenFile(path + "/config" + "/source1.xlsx")
+	f, err := xlsx.OpenFile(path + "../config" + "/source1.xlsx")
 	if err != nil {
 		fmt.Println("source 1 excel文件读取错误")
 		panic(err)
@@ -36,7 +36,7 @@ func main() {
 		list = append(list, temp)
 
 	}
-	f2, err := xlsx.OpenFile(path + "/config" + "/source2.xlsx")
+	f2, err := xlsx.OpenFile(path + "../config" + "/source2.xlsx")
 	if err != nil {
 		fmt.Println("source 2 excel文件读取错误")
 		panic(err)
