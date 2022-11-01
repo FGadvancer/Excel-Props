@@ -1,6 +1,8 @@
 package main
 
 import (
+	"Excel-Props/internal/api/auth"
+	"Excel-Props/internal/api/excel"
 	"Excel-Props/pkg/config"
 	"Excel-Props/pkg/constant"
 	"Excel-Props/pkg/log"
@@ -35,18 +37,18 @@ func main() {
 	log.Info("load config: ", config.Config)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// user routing group, which handles user registration and login services
-	userRouterGroup := r.Group("/auth")
+	// auth routing group, which handles user registration and login services
+	authRouterGroup := r.Group("/auth")
 	{
-		userRouterGroup.POST("/login", user.UpdateUserInfo) //1
-		userRouterGroup.POST("/parse_token", user.SetGlobalRecvMessageOpt)
+		authRouterGroup.POST("/login", auth.Login)
+		authRouterGroup.POST("/parse_token", auth.ParseToken)
 	}
 	fileRouterGroup := r.Group("/file")
 	{
-		userRouterGroup.POST("/excel_files_upload", user.UpdateUserInfo) //1
-		userRouterGroup.POST("/get_generated_excel_files", user.SetGlobalRecvMessageOpt)
-		userRouterGroup.POST("/get_all_generated_excel_list", user.SetGlobalRecvMessageOpt)
-		userRouterGroup.POST("/get_excel_detail", user.SetGlobalRecvMessageOpt)
+		fileRouterGroup.POST("/excel_files_upload", excel.FileUpload) //1
+		//fileRouterGroup.POST("/get_generated_excel_files", excel.SetGlobalRecvMessageOpt)
+		fileRouterGroup.POST("/get_all_generated_excel_list", excel.GetAllExcelFiles)
+		fileRouterGroup.POST("/get_excel_detail", excel.GetOneExcelDetail)
 	}
 
 	defaultPorts := config.Config.Api.GinPort
@@ -56,7 +58,7 @@ func main() {
 	if config.Config.Api.ListenIP != "" {
 		address = config.Config.Api.ListenIP + ":" + strconv.Itoa(*ginPort)
 	}
-	fmt.Println("start api server, address: ", address, "OpenIM version: ", constant.CurrentVersion, "\n")
+	fmt.Println("start api server, address: ", address, "Excel-Props version: ", constant.CurrentVersion, "\n")
 	err := r.Run(address)
 	if err != nil {
 		log.Error("", "api run failed ", address, err.Error())

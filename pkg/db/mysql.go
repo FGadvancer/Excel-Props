@@ -116,12 +116,15 @@ func initMysqlDB() {
 	DB.MysqlDB.Register = NewRegister(db)
 	DB.MysqlDB.Template1 = NewTemplate1(db)
 	DB.MysqlDB.Template2 = NewTemplate2(db)
+	DB.MysqlDB.Sheet = NewSheet(db)
+	DB.MysqlDB.SheetAndMaterial = NewSheetAndMaterial(db)
 	for i, v := range config.Config.Manager.AppManagerUid {
 		user := Register{}
 		if e := DB.MysqlDB.db.Model(&Register{}).Where("account = ? ", v).Take(&user).Error; e != nil {
 			fmt.Println("admin find : ", v, e.Error())
 			user.Account = config.Config.Manager.AppManagerUid[i]
 			user.Password = utils.Md5(config.Config.Manager.Secrets[i])
+			user.UserName = config.Config.Manager.AppManagerUid[i]
 			user.CreateTime = time.Now()
 			if err := DB.MysqlDB.db.Model(&user).Create(&user).Error; err != nil {
 				fmt.Println("init db error  : ", v, e.Error())

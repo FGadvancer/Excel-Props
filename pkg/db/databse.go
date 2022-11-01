@@ -7,10 +7,6 @@ type DataBases struct {
 	redis   *Redis
 }
 
-func key(dbAddress, dbName string) string {
-	return dbAddress + "_" + dbName
-}
-
 func init() {
 	//mysql init
 	initMysqlDB()

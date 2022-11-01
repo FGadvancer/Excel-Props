@@ -10,6 +10,7 @@ import (
 type Register struct {
 	Account    string    `gorm:"column:account;primary_key;type:char(64)" json:"account"`
 	Password   string    `gorm:"column:password;type:varchar(255)" json:"password"`
+	UserName   string    `gorm:"column:user_name;type:varchar(64)" json:"userName"`
 	CreateTime time.Time `gorm:"column:create_time" json:"createTime"`
 	Ex         string    `gorm:"column:ex;type:varchar(1024)"  json:"ex"`
 	DB         *gorm.DB  `gorm:"-" json:"-"`
