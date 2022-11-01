@@ -30,7 +30,7 @@ func NewTemplate2(DB *gorm.DB) *Template2 {
 func (t *Template2) ImportDataToTemplate2(data []*Template2) error {
 	for _, v := range data {
 		t := Template2{}
-		if e := DB.MysqlDB.db.Model(&Template1{}).Where("material_key = ? And material_standard", v.MaterialKey, v.MaterialStandard).Take(&t).Error; e != nil {
+		if e := DB.MysqlDB.db.Model(&Template2{}).Where("material_key = ? And material_standard", v.MaterialKey, v.MaterialStandard).Take(&t).Error; e != nil {
 			fmt.Println("new Material find : ", v, e.Error())
 			if err := DB.MysqlDB.db.Model(v).Create(v).Error; err != nil {
 				fmt.Println("import sheet  db error  : ", v, e.Error())
