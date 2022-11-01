@@ -1,14 +1,17 @@
 package db
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+	"gorm.io/gorm"
+)
 
 //料件模板表
 type Template2 struct {
 	MaterialKey        string   `gorm:"column:material_key;primary_key;type:char(64)" json:"materialKey"`
+	MaterialStandard   string   `gorm:"column:material_standard;primary_key;type:varchar(64)" json:"materialStandard"`
 	MaterialCategory   string   `gorm:"column:material_category;type:varchar(64)" json:"materialCategory"`
 	MaterialName       string   `gorm:"column:material_name;type:varchar(64)" json:"materialName"`
 	MaterialSubstance  string   `gorm:"column:material_substance;type:varchar(64)" json:"materialSubstance"`
-	MaterialStandard   string   `gorm:"column:material_standard;type:varchar(64)" json:"materialStandard"`
 	Quantity           int32    `gorm:"column:quantity" json:"quantity"`
 	MaterialUnit       string   `gorm:"column:material_unit;type:varchar(64)" json:"materialUnit"`
 	ProcessingCategory string   `gorm:"column:processing_category;type:varchar(64)" json:"processingCategory"`
@@ -22,4 +25,17 @@ type Template2 struct {
 
 func NewTemplate2(DB *gorm.DB) *Template2 {
 	return &Template2{DB: DB}
+}
+
+func (t *Template2) ImportDataToTemplate2(data []*Template2) error {
+	for _, v := range data {
+		user := Template2{}
+		if e := DB.MysqlDB.db.Model(&Template1{}).Where("material_key = ? And material_standard", v.MaterialKey, v.MaterialStandard).Take(&user).Error; e != nil {
+			fmt.Println("new Material find : ", v, e.Error())
+			if err := DB.MysqlDB.db.Model(v).Create(v).Error; err != nil {
+				fmt.Println("import sheet  db error  : ", v, e.Error())
+			}
+		}
+	}
+	return nil
 }
