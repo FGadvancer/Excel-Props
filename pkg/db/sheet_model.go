@@ -45,7 +45,7 @@ func (s *Sheet) UpdateSheet(sheet *Sheet) error {
 
 func (s *Sheet) GetAllSheetsInfo() ([]*Sheet, error) {
 	var sheetList []Sheet
-	err := DB.MysqlDB.db.Find(&sheetList).Error
+	err := DB.MysqlDB.db.Order("last_modify_time DESC").Find(&sheetList).Error
 	var transfer []*Sheet
 	for _, v := range sheetList {
 		v1 := v
