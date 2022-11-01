@@ -41,6 +41,7 @@ func main() {
 		log.Error("main", "source 1 excel import file err:", err.Error())
 		panic(err)
 	}
+	f = nil
 	f, err = xlsx.OpenFile(path + "/source2.xlsx")
 	if err != nil {
 		log.Error("main", "source 2 excel read file error:", err.Error())
