@@ -16,3 +16,19 @@ services:
       MYSQL_USER: 'admin'
       MYSQL_PASS: '175a8d1e'
     restart: always
+
+  redis:
+    image: redis
+    ports:
+      - 16380:6379
+    container_name: redis
+    volumes:
+      - ./components/redis/data:/data
+      #redis config file
+      - ./components/redis/config/redis.conf:/usr/local/redis/redis.conf
+    environment:
+      TZ: Asia/Shanghai
+    restart: always
+    sysctls:
+      net.core.somaxconn: 1024
+    command: redis-server --requirepass 175a8d1e --appendonly yes
