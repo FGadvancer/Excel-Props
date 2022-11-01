@@ -1,5 +1,5 @@
 mysql:
-  dbMysqlAddress: [ 127.0.0.1:45002 ] #mysql地址 目前仅支持单机，默认即可
+  dbMysqlAddress: [ 127.0.0.1:45003 ] #mysql地址 目前仅支持单机，默认即可
   dbMysqlUserName: root #mysql用户名，建议修改
   dbMysqlPassword: 175a8d1e # mysql密码，建议修改
   dbMysqlDatabaseName: excel_props #默认即可
