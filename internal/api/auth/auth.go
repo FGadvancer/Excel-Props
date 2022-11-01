@@ -24,12 +24,14 @@ func Login(c *gin.Context) {
 		log.NewError(operationID, "not user info", err.Error(), req)
 		resp.ErrCode = constant.NotUserInfo
 		resp.ErrMsg = "not user info"
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 	if user.Password != req.Password {
 		log.NewError(operationID, "password err", req)
 		resp.ErrCode = constant.PasswordError
 		resp.ErrMsg = "password err"
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 	tokenString, _ := token.CreateToken(req.UserID, config.Config.TokenPolicy.AccessExpire)
@@ -46,6 +48,7 @@ func ParseToken(c *gin.Context) {
 		log.NewError(operationID, "token parse failed", err.Error())
 		resp.ErrCode = constant.ParseTokenFailed
 		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 	_, err = db.DB.MysqlDB.GetAccountInfo(userID)
@@ -53,6 +56,7 @@ func ParseToken(c *gin.Context) {
 		log.NewError(operationID, "not user info", err.Error())
 		resp.ErrCode = constant.NotUserInfo
 		resp.ErrMsg = "not user info"
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 	c.JSON(http.StatusOK, resp)
