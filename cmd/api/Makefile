@@ -1,6 +1,6 @@
 .PHONY: all build run gotool install clean help
 
-BINARY_NAME=open_im_api
+BINARY_NAME=excel_props_api
 BIN_DIR=../../bin/
 
 
