@@ -17,7 +17,7 @@ func main() {
 	fmt.Println(path)
 	f, err := xlsx.OpenFile(path + "/source1.xlsx")
 	if err != nil {
-		fmt.Println("source 1 excel read file error:", err.Error())
+		log.Error("main", "source 1 excel read file error:", err.Error())
 		panic(err)
 	}
 	//fmt.Println(len())
@@ -38,12 +38,12 @@ func main() {
 	}
 	err = db.DB.MysqlDB.ImportDataToTemplate1(list)
 	if err != nil {
-		fmt.Println("source 1 excel import file err:", err.Error())
+		log.Error("main", "source 1 excel import file err:", err.Error())
 		panic(err)
 	}
 	f2, err := xlsx.OpenFile(path + "/source2.xlsx")
 	if err != nil {
-		fmt.Println("source 2 excel read file error:", err.Error())
+		log.Error("main", "source 2 excel read file error:", err.Error())
 		panic(err)
 	}
 	log.Debug("main", "get source 2 file info is:", f2.Sheets[0].MaxRow, f.Sheets[0].MaxCol)
@@ -71,7 +71,7 @@ func main() {
 	}
 	err = db.DB.MysqlDB.ImportDataToTemplate2(list2)
 	if err != nil {
-		fmt.Println("source 2 excel import file err:", err.Error())
+		log.Error("main", "source 2 excel import file err:", err.Error())
 		panic(err)
 	}
 
