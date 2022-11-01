@@ -24,16 +24,16 @@ func main() {
 	log.Debug("main", "get source 1 file info is:", f.Sheets[0].MaxRow, f.Sheets[0].MaxCol)
 	var list []*db.Template1
 	for i := 0; i < f.Sheets[0].MaxRow; i++ {
-		temp := new(db.Template1)
 		if i > 2 {
+			temp := new(db.Template1)
 			if f.Sheets[0].Cell(i, 9).Value != "" {
 				temp.SheetID = f.Sheets[0].Cell(i, 9).Value
 				temp.MachineKind = f.Sheets[0].Cell(i, 2).Value
 				temp.ProductName = f.Sheets[0].Cell(i, 3).Value
 				temp.Code = f.Sheets[0].Cell(i, 10).Value
+				list = append(list, temp)
 			}
 		}
-		list = append(list, temp)
 
 	}
 	err = db.DB.MysqlDB.ImportDataToTemplate1(list)
@@ -52,9 +52,10 @@ func main() {
 	var list2 []*db.Template2
 	fmt.Println("get source 2 file info", s.MaxRow, s.MaxCol)
 	for i := 0; i < s.MaxRow; i++ {
-		temp := new(db.Template2)
+
 		if i > 0 {
 			if s.Cell(i, 0).Value != "" && s.Cell(i, 4).Value != "" {
+				temp := new(db.Template2)
 				temp.MaterialKey = s.Cell(i, 0).Value
 
 				temp.MaterialCategory = s.Cell(i, 1).Value
@@ -69,9 +70,9 @@ func main() {
 				temp.IsPurchase = s.Cell(i, 10).Value
 				temp.StandardCraft = s.Cell(i, 11).Value
 				fmt.Println(s.Cell(i, 0).Value)
+				list2 = append(list2, temp)
 			}
 		}
-		list2 = append(list2, temp)
 
 	}
 	err = db.DB.MysqlDB.ImportDataToTemplate2(list2)
