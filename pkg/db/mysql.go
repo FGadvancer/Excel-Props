@@ -101,8 +101,11 @@ func initMysqlDB() {
 		db.Migrator().CreateTable(&Sheet{})
 	}
 	if !db.Migrator().HasTable(&SheetAndMaterial{}) {
-		fmt.Println("CreateTable SheetAndMaterial")
-		db.Migrator().CreateTable(&SheetAndMaterial{})
+
+		err := db.Migrator().CreateTable(&SheetAndMaterial{})
+		if err != nil {
+			fmt.Println("CreateTable SheetAndMaterial err:", err.Error())
+		}
 	}
 	if !db.Migrator().HasTable(&Template1{}) {
 		fmt.Println("CreateTable Template1")

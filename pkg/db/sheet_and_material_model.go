@@ -22,7 +22,7 @@ type SheetAndMaterial struct {
 	StandardCraft      string    `gorm:"column:standard_craft;type:varchar(64)" json:"standardCraft"`
 	SubMaterialKey     string    `gorm:"column:sub_material_key;primary_key;type:varchar(1024)" json:"subMaterialKey"`
 	LastModifyTime     time.Time `gorm:"column:last_modify_time" json:"lastModifyTime"`
-	LastModifierUserID string    `gorm:"column:last_modifier_userID;size:64" json:"lastModifierUserID"`
+	LastModifierUserID string    `gorm:"column:last_modifier_userID;char(64)" json:"lastModifierUserID"`
 	LastModifyCount    int32     `gorm:"column:last_modify_count" json:"lastModifyCount"`
 	Ex                 string    `gorm:"column:ex;type:varchar(1024)"  json:"ex"`
 	DB                 *gorm.DB  `gorm:"-" json:"-"`
