@@ -22,6 +22,10 @@ type mysqlDB struct {
 	*SheetAndMaterial
 }
 
+func (m mysqlDB) Db() *gorm.DB {
+	return m.db
+}
+
 type Writer struct{}
 
 func (w Writer) Printf(format string, args ...interface{}) {

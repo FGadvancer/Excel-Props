@@ -65,6 +65,7 @@ const (
 	groupMinSeq                   = "GROUP_MIN_SEQ:"
 	sendMsgFailedFlag             = "SEND_MSG_FAILED_FLAG:"
 	userBadgeUnreadCountSum       = "USER_BADGE_UNREAD_COUNT_SUM:"
+	SheetID                       = "TEMPLATE_CODE:"
 )
 
 func (d *Redis) JudgeAccountEXISTS(account string) (bool, error) {
@@ -87,5 +88,14 @@ func (d *Redis) GetAccountCode(account string) (string, error) {
 
 func (d *Redis) DelAccountCode(account string) error {
 	key := accountTempCode + account
+	return d.RDB.Del(context.Background(), key).Err()
+}
+
+func (d *Redis) LockSheetID(sheetID string) error {
+	key := SheetID + sheetID
+	return d.RDB.SetNX(context.Background(), key, 1, time.Minute).Err()
+}
+func (d *Redis) UnLockSheetID(sheetID string) error {
+	key := SheetID + sheetID
 	return d.RDB.Del(context.Background(), key).Err()
 }

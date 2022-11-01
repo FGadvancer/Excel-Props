@@ -4,12 +4,12 @@ var DB DataBases
 
 type DataBases struct {
 	MysqlDB mysqlDB
-	redis   *Redis
+	Redis   *Redis
 }
 
 func init() {
 	//mysql init
 	initMysqlDB()
-	DB.redis = initRedis()
+	DB.Redis = initRedis()
 
 }

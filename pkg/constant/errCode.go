@@ -7,6 +7,11 @@ const (
 	NotUserInfo      = 101
 	PasswordError    = 102
 	ParseTokenFailed = 103
+	NotTemplateInfo  = 104
+	NotMaterialInfo  = 104
+	SheetBusy        = 105
+	SheetDBError     = 106
+	NotSheetInfo     = 107
 )
 
 type ErrInfo struct {

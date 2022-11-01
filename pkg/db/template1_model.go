@@ -1,6 +1,7 @@
 package db
 
 import (
+	"Excel-Props/pkg/utils"
 	"fmt"
 	"gorm.io/gorm"
 )
@@ -30,4 +31,22 @@ func (t *Template1) ImportDataToTemplate1(data []*Template1) error {
 		}
 	}
 	return nil
+}
+
+func (t *Template1) GetTemplateInfo(sheetID string) (*Template1, error) {
+	temp := Template1{}
+	err := DB.MysqlDB.db.Model(&temp).Where("sheet_id = ? ", sheetID).Take(&temp).Error
+	return &temp, utils.Wrap(err, "")
+}
+
+func (t *Template1) GetAllTemplates() ([]*Template1, error) {
+	var templateList []Template1
+	err := utils.Wrap(DB.MysqlDB.db.Find(&templateList).Error,
+		"GetAllTemplates failed")
+	var transfer []*Template1
+	for _, v := range templateList {
+		v1 := v
+		transfer = append(transfer, &v1)
+	}
+	return transfer, err
 }

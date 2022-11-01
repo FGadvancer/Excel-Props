@@ -1,5 +1,7 @@
 package api
 
+import "Excel-Props/pkg/db"
+
 type (
 	LoginReq struct {
 		UserID   string `json:"userID" binding:"required"`
@@ -16,6 +18,8 @@ type (
 		CommResp
 	}
 	ExcelFileUploadReq struct {
+		SheetID   string        `json:"sheetID" binding:"required"`
+		SheetList []SheetObject `json:"sheetList"`
 	}
 	ExcelFileUploadResp struct {
 		CommResp
@@ -24,14 +28,28 @@ type (
 	}
 	GetAllExcelFilesResp struct {
 		CommResp
+		Data struct {
+			SheetList []*db.Sheet `json:"sheetList"`
+		} `json:"data,omitempty"`
 	}
 	GetOneExcelDetailReq struct {
+		SheetID string `json:"sheetID" binding:"required"`
 	}
 	GetOneExcelDetailResp struct {
 		CommResp
+		Data struct {
+			*db.Sheet
+			SheetMaterialList []*db.SheetAndMaterial `json:"sheetMaterialList"`
+		} `json:"data,omitempty"`
 	}
 )
 type CommResp struct {
 	ErrCode int32  `json:"errCode"`
 	ErrMsg  string `json:"errMsg"`
+}
+type SheetObject struct {
+	MaterialKey      string   `json:"materialKey" `
+	SubMaterialKey   []string `json:"subMaterialKey" `
+	MaterialStandard string   `json:"materialStandard" `
+	Quantity         int32    `json:"quantity" `
 }
