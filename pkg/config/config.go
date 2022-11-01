@@ -31,7 +31,7 @@ type config struct {
 
 	ServerVersion string `yaml:"serverversion"`
 	Api           struct {
-		GinPort  []int  `yaml:"openImApiPort"`
+		GinPort  []int  `yaml:"apiPort"`
 		ListenIP string `yaml:"listenIP"`
 	}
 	CmsApi struct {
