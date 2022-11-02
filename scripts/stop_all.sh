@@ -11,8 +11,8 @@ service_name=${service_filename[0]}
   count="${name}| wc -l"
   if [ $(eval ${count}) -gt 0 ]; then
     pid="${name}| awk '{print \$2}'"
-    echo -e "${SKY_BLUE_PREFIX}Killing service:$i pid:$(eval $pid)${COLOR_SUFFIX}"
+    echo -e "${SKY_BLUE_PREFIX}Killing service:${service_name} pid:$(eval $pid)${COLOR_SUFFIX}"
     #kill the service that existed
     kill -9 $(eval $pid)
-    echo -e "${SKY_BLUE_PREFIX}service:$i was killed ${COLOR_SUFFIX}"
+    echo -e "${SKY_BLUE_PREFIX}service:${service_name} was killed ${COLOR_SUFFIX}"
   fi
