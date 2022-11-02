@@ -8,7 +8,7 @@ service_name=${service_filename[0]}
 
   #Check whether the service exists
   name="ps -aux |grep -w ${service_name} |grep -v grep"
-  count="${name}| wc -l"
+  count=`ps -aux |grep -w ${service_name} |grep -v grep| wc -l`
   if [ $(eval ${count}) -gt 0 ]; then
     pid="${name}| awk '{print \$2}'"
     echo -e "${SKY_BLUE_PREFIX}Killing service:${service_name} pid:$(eval $pid)${COLOR_SUFFIX}"
