@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 source ./style_info.cfg
+source ./path_info.cfg
 
 
 
