@@ -7,12 +7,12 @@ source ./path_info.cfg
 service_name=${service_filename[0]}
 
   #Check whether the service exists
-  name="ps -aux |grep -w ${service_name} |grep -v grep"
-  count=`ps -aux |grep -w ${service_name} |grep -v grep| wc -l`
-  if [ $(eval ${count}) -gt 0 ]; then
-    pid="${name}| awk '{print \$2}'"
-    echo -e "${SKY_BLUE_PREFIX}Killing service:${service_name} pid:$(eval $pid)${COLOR_SUFFIX}"
-    #kill the service that existed
-    kill -9 $(eval $pid)
-    echo -e "${SKY_BLUE_PREFIX}service:${service_name} was killed ${COLOR_SUFFIX}"
-  fi
+
+  check=$(ps aux | grep -w ./${service_name} | grep -v grep | wc -l)
+if [ $check -ge 1 ]; then
+  oldPid=$(ps aux | grep -w ./${service_name} | grep -v grep | awk '{print $2}')
+      echo -e "${SKY_BLUE_PREFIX}Killing service:${service_name} pid:${oldPid}${COLOR_SUFFIX}"
+      kill -9 ${oldPid}
+      echo -e "${SKY_BLUE_PREFIX}service:${service_name} was killed ${COLOR_SUFFIX}"
+fi
+
