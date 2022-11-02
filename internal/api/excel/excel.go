@@ -31,6 +31,14 @@ func FileUpload(c *gin.Context) {
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
+	user, err := db.DB.MysqlDB.GetAccountInfo(userID)
+	if err != nil {
+		log.NewError(operationID, "not user info", err.Error(), req)
+		resp.ErrCode = constant.NotUserInfo
+		resp.ErrMsg = "not user info"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
 	log.NewDebug(operationID, "input args is:", req)
 	temp, err := db.DB.MysqlDB.GetTemplateInfo(req.SheetID)
 	if err != nil {
@@ -67,6 +75,7 @@ func FileUpload(c *gin.Context) {
 		material.LastModifyTime = time.Now()
 		material.LastModifierUserID = userID
 		material.LastModifyCount = v.Quantity
+		material.LastModifierName = user.UserName
 		material.SubMaterialKey = utils.StructToJsonString(v.SubMaterialKey)
 		tempMaterialList = append(tempMaterialList, material)
 	}
@@ -94,6 +103,7 @@ func FileUpload(c *gin.Context) {
 		sheet.CreateTime = time.Now()
 		sheet.LastModifyTime = time.Now()
 		sheet.LastModifierUserID = userID
+		sheet.LastModifierName = user.UserName
 		err := db.DB.MysqlDB.InsertSheet(&sheet)
 		if err != nil {
 			log.NewError(operationID, "this sheet db operation error", err.Error(), req)
@@ -120,7 +130,8 @@ func FileUpload(c *gin.Context) {
 		newSheet.Version = sheet.Version + 1
 		newSheet.LastModifierUserID = userID
 		newSheet.LastModifyTime = time.Now()
-		sheet.LastModifierIP = c.Request.RemoteAddr
+		newSheet.LastModifierIP = c.Request.RemoteAddr
+		newSheet.LastModifierName = user.UserName
 		err := db.DB.MysqlDB.UpdateSheet(&newSheet)
 		if err != nil {
 			log.NewError(operationID, "UpdateSheet db operation error", err.Error(), req)
@@ -152,6 +163,7 @@ func FileUpload(c *gin.Context) {
 				oldMaterialInfo.LastModifyCount = material.LastModifyCount
 				oldMaterialInfo.LastModifierUserID = material.LastModifierUserID
 				oldMaterialInfo.LastModifyTime = material.LastModifyTime
+				oldMaterialInfo.LastModifierName = material.LastModifierName
 				newErr := db.DB.MysqlDB.UpdateSheetAndMaterial(oldMaterialInfo)
 				if newErr != nil {
 					tx.Rollback()
