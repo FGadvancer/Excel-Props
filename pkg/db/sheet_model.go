@@ -13,11 +13,12 @@ type Sheet struct {
 	CommodityName      string    `gorm:"column:commodity_name;type:char(64)" json:"commodityName"`
 	Version            int32     `gorm:"column:version" json:"version"`
 	Code               string    `gorm:"column:code;type:varchar(64)" json:"code"`
-	CreatorUserID      string    `gorm:"column:creator_user_id;size:64"`
+	CreatorUserID      string    `gorm:"column:creator_user_id;size:64" json:"creatorUserID"`
 	CreateTime         time.Time `gorm:"column:create_time" json:"createTime"`
 	LastModifierUserID string    `gorm:"column:last_modifier_userID;size:64" json:"lastModifierUserID"`
-	LastModifierIP     string    `gorm:"column:last_modifier_ip;size:64" json:"LastModifierIP"`
+	LastModifierIP     string    `gorm:"column:last_modifier_ip;size:64" json:"lastModifierIP"`
 	LastModifyTime     time.Time `gorm:"column:last_modify_time" json:"lastModifyTime"`
+	LastModifierName   string    `gorm:"column:last_modifier_name;type:varchar(64)" json:"lastModifierName"`
 	Ex                 string    `gorm:"column:ex;type:varchar(1024)"  json:"ex,omitempty"`
 	DB                 *gorm.DB  `gorm:"-" json:"-"`
 }
