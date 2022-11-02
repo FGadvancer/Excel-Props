@@ -20,10 +20,10 @@ if [ $check -ge 1 ]; then
 fi
 #Waiting port recycling
 sleep 1
-cd ${msg_gateway_binary_root}
-for ((i = 0; i < ${#ws_ports[@]}; i++)); do
-  nohup ./${service_name}  >>../logs/Excel-Props.log 2>&1 &
-done
+cd ../bin
+
+nohup ./${service_name}  >>../logs/Excel-Props.log 2>&1 &
+
 
 #Check launched service process
 sleep 3
