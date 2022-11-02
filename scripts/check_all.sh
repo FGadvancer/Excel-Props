@@ -8,9 +8,9 @@ service_name=${service_filename[0]}
   list=$(cat $config_path | grep -w apiPort | awk -F '[:]' '{print $NF}')
   list_to_string $list
   for j in ${ports_array}; do
-    port=$(ss -tunlp| grep service_name | awk '{print $5}' | grep -w ${j} | awk -F '[:]' '{print $NF}')
+    port=$(ss -tunlp| grep excel | awk '{print $5}' | grep -w ${j} | awk -F '[:]' '{print $NF}')
     if [[ ${port} -ne ${j} ]]; then
-      echo -e ${YELLOW_PREFIX}${i}${COLOR_SUFFIX}${RED_PREFIX}" service does not start normally,not initiated port is "${COLOR_SUFFIX}${YELLOW_PREFIX}${j}${COLOR_SUFFIX}
+      echo -e ${YELLOW_PREFIX}${i}${COLOR_SUFFIX}${RED_PREFIX}"service does not start normally,not initiated port is "${COLOR_SUFFIX}${YELLOW_PREFIX}${j}${COLOR_SUFFIX}
       echo -e ${RED_PREFIX}"please check ../logs/Excel-Props.log "${COLOR_SUFFIX}
       exit -1
     else
