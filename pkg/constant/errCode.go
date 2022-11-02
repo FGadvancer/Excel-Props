@@ -3,15 +3,15 @@ package constant
 import "errors"
 
 const (
-	ArgsErr          = 100
-	NotUserInfo      = 101
-	PasswordError    = 102
-	ParseTokenFailed = 103
-	NotTemplateInfo  = 104
-	NotMaterialInfo  = 104
-	SheetBusy        = 105
-	SheetDBError     = 106
-	NotSheetInfo     = 107
+	ArgsErr                 = 100
+	NotUserInfo             = 101
+	PasswordError           = 102
+	ParseTokenFailed        = 103
+	NotTemplateInfo         = 104
+	NotTemPlateMaterialInfo = 105
+	SheetBusy               = 106
+	SheetDBError            = 107
+	NotSheetInfo            = 108
 )
 
 type ErrInfo struct {

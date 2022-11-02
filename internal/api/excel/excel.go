@@ -45,7 +45,7 @@ func FileUpload(c *gin.Context) {
 		temp, err := db.DB.MysqlDB.GetMaterialInfo(v.MaterialKey, v.MaterialStandard)
 		if err != nil {
 			log.NewError(operationID, "not material info", err.Error(), req)
-			resp.ErrCode = constant.NotMaterialInfo
+			resp.ErrCode = constant.NotTemPlateMaterialInfo
 			resp.ErrMsg = "not material info"
 			c.JSON(http.StatusOK, resp)
 			return
