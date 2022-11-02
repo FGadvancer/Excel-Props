@@ -28,7 +28,7 @@ type SheetAndMaterial struct {
 	LastModifierUserID string    `gorm:"column:last_modifier_userID;char(64)" json:"lastModifierUserID"`
 	LastModifierName   string    `gorm:"column:last_modifier_name;type:varchar(64)" json:"lastModifierName"`
 	LastModifyCount    int32     `gorm:"column:last_modify_count" json:"lastModifyCount"`
-	Ex                 string    `gorm:"column:ex;type:varchar(1024)"  json:"ex"`
+	Ex                 string    `gorm:"column:ex;type:varchar(1024)"  json:"ex,omitempty"`
 	DB                 *gorm.DB  `gorm:"-" json:"-"`
 }
 
