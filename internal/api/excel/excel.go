@@ -17,6 +17,8 @@ func FileUpload(c *gin.Context) {
 	tokenString := c.Request.Header.Get("token")
 	req := api.ExcelFileUploadReq{}
 	resp := api.ExcelFileUploadResp{}
+	log.NewDebug(operationID, "req", req)
+	defer log.NewDebug(operationID, "resp", resp)
 	//
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
@@ -176,6 +178,8 @@ func GetAllExcelFiles(c *gin.Context) {
 	operationID := c.Request.Header.Get("operationID")
 	tokenString := c.Request.Header.Get("token")
 	resp := api.GetAllExcelFilesResp{}
+	log.NewDebug(operationID, "req", tokenString)
+	defer log.NewDebug(operationID, "resp", resp)
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error())
@@ -200,6 +204,8 @@ func GetOneExcelDetail(c *gin.Context) {
 	tokenString := c.Request.Header.Get("token")
 	req := api.GetOneExcelDetailReq{}
 	resp := api.GetOneExcelDetailResp{}
+	log.NewDebug(operationID, "req", req)
+	defer log.NewDebug(operationID, "resp", resp)
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error(), userID)

@@ -15,6 +15,8 @@ func Login(c *gin.Context) {
 	operationID := c.Request.Header.Get("operationID")
 	req := api.LoginReq{}
 	resp := api.LoginResp{}
+	log.NewDebug(operationID, "req", req)
+	defer log.NewDebug(operationID, "resp", resp)
 
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
@@ -34,6 +36,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+
 	tokenString, _ := token.CreateToken(req.UserID, config.Config.TokenPolicy.AccessExpire)
 	resp.Data.UserName = user.UserName
 	resp.Data.Token = tokenString
@@ -43,6 +46,8 @@ func ParseToken(c *gin.Context) {
 	operationID := c.Request.Header.Get("operationID")
 	tokenString := c.Request.Header.Get("token")
 	resp := api.PareTokenResp{}
+	log.NewDebug(operationID, "req", tokenString)
+	defer log.NewDebug(operationID, "resp", resp)
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error())
