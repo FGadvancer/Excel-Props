@@ -13,11 +13,7 @@ fi
 if [ ! -d $logs_dir ]; then
   mkdir -p $logs_dir
 fi
-service_source_root=(
-  #api service file
-  ../cmd/api/
-  ../cmd/template/
-)
+
 
 #begin path
 begin_path=$PWD
