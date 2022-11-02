@@ -4,7 +4,8 @@ source ./style_info.cfg
 source ./path_info.cfg
 source ./function.sh
 ulimit -n 200000
-service_name=${service_filename[0]}
+
+service_name=excel_props_api
 list1=$(cat $config_path | grep apiPort | awk -F '[:]' '{print $NF}')
 
 list_to_string $list1
