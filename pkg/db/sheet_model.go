@@ -17,7 +17,7 @@ type Sheet struct {
 	CreateTime         time.Time `gorm:"column:create_time" json:"createTime"`
 	LastModifierUserID string    `gorm:"column:last_modifier_userID;size:64" json:"lastModifierUserID"`
 	LastModifierIP     string    `gorm:"column:last_modifier_ip;size:64" json:"lastModifierIP"`
-	LastModifyTime     time.Time `gorm:"column:last_modify_time" json:"lastModifyTime"`
+	LastModifyTime     time.Time `gorm:"column:last_modify_time;index:index_last_modify_time;" json:"lastModifyTime"`
 	LastModifierName   string    `gorm:"column:last_modifier_name;type:varchar(64)" json:"lastModifierName"`
 	Ex                 string    `gorm:"column:ex;type:varchar(1024)"  json:"ex,omitempty"`
 	DB                 *gorm.DB  `gorm:"-" json:"-"`
@@ -46,7 +46,7 @@ func (s *Sheet) UpdateSheet(sheet *Sheet) error {
 
 func (s *Sheet) GetAllSheetsInfo() ([]*Sheet, error) {
 	var sheetList []Sheet
-	err := DB.MysqlDB.db.Order("last_modify_time DESC").Find(&sheetList).Error
+	err := DB.MysqlDB.db.Debug().Order("last_modify_time DESC").Find(&sheetList).Error
 	var transfer []*Sheet
 	for _, v := range sheetList {
 		v1 := v

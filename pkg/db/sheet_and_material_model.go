@@ -24,7 +24,7 @@ type SheetAndMaterial struct {
 	IsPurchase         string    `gorm:"column:is_purchase;type:varchar(64)" json:"isPurchase"`
 	StandardCraft      string    `gorm:"column:standard_craft;type:varchar(64)" json:"standardCraft"`
 	SubMaterialKey     string    `gorm:"column:sub_material_key;type:varchar(1024)" json:"subMaterialKey"`
-	LastModifyTime     time.Time `gorm:"column:last_modify_time" json:"lastModifyTime"`
+	LastModifyTime     time.Time `gorm:"column:last_modify_time;index:index_last_modify_time;" json:"lastModifyTime"`
 	LastModifierUserID string    `gorm:"column:last_modifier_userID;char(64)" json:"lastModifierUserID"`
 	LastModifierName   string    `gorm:"column:last_modifier_name;type:varchar(64)" json:"lastModifierName"`
 	LastModifyCount    int32     `gorm:"column:last_modify_count" json:"lastModifyCount"`
@@ -61,7 +61,7 @@ func (s *SheetAndMaterial) UpdateSheetAndMaterial(material *SheetAndMaterial) er
 
 func (s *SheetAndMaterial) GetSheetAndMaterialInfoBySheetID(sheetID string) ([]*SheetAndMaterial, error) {
 	var temp []SheetAndMaterial
-	err := DB.MysqlDB.db.Model(&temp).Where("sheet_id = ?", sheetID).Order("last_modify_time DESC").Find(&temp).Error
+	err := DB.MysqlDB.db.Debug().Model(&temp).Where("sheet_id = ?", sheetID).Order("last_modify_time DESC").Find(&temp).Error
 
 	var transfer []*SheetAndMaterial
 	for _, v := range temp {
