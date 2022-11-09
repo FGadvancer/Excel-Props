@@ -168,7 +168,7 @@ func FileUpload(c *gin.Context) {
 		} else {
 			newSheet.Version = sheet.Version
 		}
-		newSheet.SubVersion = newSheet.SubVersion + 1
+		newSheet.SubVersion = sheet.SubVersion + 1
 		newSheet.LastModifierUserID = userID
 		newSheet.LastModifyTime = time.Now()
 		newSheet.LastModifierIP = c.Request.RemoteAddr
