@@ -49,8 +49,9 @@ func FileUpload(c *gin.Context) {
 		return
 	}
 	var tempMaterialList []*db.SheetAndMaterial
+	//var recordList []*db.VersionUpLoadRecord
 	for _, v := range req.SheetList {
-		temp, err := db.DB.MysqlDB.GetMaterialInfo(v.MaterialKey, v.MaterialStandard)
+		temp, err := db.DB.MysqlDB.GetMaterialInfo(v.MaterialKey)
 		if err != nil {
 			log.NewError(operationID, "not material info", err.Error(), req)
 			resp.ErrCode = constant.NotTemPlateMaterialInfo
@@ -62,6 +63,7 @@ func FileUpload(c *gin.Context) {
 		material.SheetID = req.SheetID
 		material.MaterialKey = v.MaterialKey
 		material.MaterialStandard = v.MaterialStandard
+		material.Version = 1
 		material.MaterialCategory = temp.MaterialCategory
 		material.MaterialName = temp.MaterialName
 		material.MaterialSubstance = temp.MaterialSubstance
@@ -99,6 +101,7 @@ func FileUpload(c *gin.Context) {
 		sheet.Code = temp.Code
 		sheet.CreatorUserID = userID
 		sheet.Version = 1
+		sheet.IsCompleteVersion = false
 		sheet.LastModifierIP = c.Request.RemoteAddr
 		sheet.CreateTime = time.Now()
 		sheet.LastModifyTime = time.Now()

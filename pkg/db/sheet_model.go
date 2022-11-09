@@ -12,6 +12,7 @@ type Sheet struct {
 	SheetID            string    `gorm:"column:sheet_id;primary_key;type:char(64)" json:"sheetID"`
 	CommodityName      string    `gorm:"column:commodity_name;type:char(64)" json:"commodityName"`
 	Version            int32     `gorm:"column:version" json:"version"`
+	IsCompleteVersion  bool      `gorm:"column:is_complete_version" json:"isCompleteVersion"`
 	Code               string    `gorm:"column:code;type:varchar(64)" json:"code"`
 	CreatorUserID      string    `gorm:"column:creator_user_id;size:64" json:"creatorUserID"`
 	CreateTime         time.Time `gorm:"column:create_time" json:"createTime"`

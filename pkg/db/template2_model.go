@@ -9,7 +9,7 @@ import (
 //料件模板表
 type Template2 struct {
 	MaterialKey        string   `gorm:"column:material_key;primary_key;type:char(64)" json:"materialKey"`
-	MaterialStandard   string   `gorm:"column:material_standard;primary_key;type:varchar(64)" json:"materialStandard"`
+	MaterialStandard   string   `gorm:"column:material_standard;type:varchar(64)" json:"materialStandard"`
 	MaterialCategory   string   `gorm:"column:material_category;type:varchar(64)" json:"materialCategory"`
 	MaterialName       string   `gorm:"column:material_name;type:varchar(64)" json:"materialName"`
 	MaterialSubstance  string   `gorm:"column:material_substance;type:varchar(64)" json:"materialSubstance"`
@@ -40,8 +40,8 @@ func (t *Template2) ImportDataToTemplate2(data []*Template2) error {
 	}
 	return nil
 }
-func (t *Template2) GetMaterialInfo(materialKey, materialStandard string) (*Template2, error) {
+func (t *Template2) GetMaterialInfo(materialKey string) (*Template2, error) {
 	temp := Template2{}
-	err := DB.MysqlDB.db.Model(&temp).Where("material_key = ? And material_standard = ?", materialKey, materialStandard).Take(&temp).Error
+	err := DB.MysqlDB.db.Model(&temp).Where("material_key = ?", materialKey).Take(&temp).Error
 	return &temp, utils.Wrap(err, "")
 }
