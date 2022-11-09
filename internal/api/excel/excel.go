@@ -160,12 +160,13 @@ func FileUpload(c *gin.Context) {
 		tx.Commit()
 
 	} else {
+		var isUpdateCompleteVersion bool
 		tx := db.DB.MysqlDB.Db().Begin()
 		var newSheet db.Sheet
 		newSheet.SheetID = sheet.SheetID
 		if sheet.IsCompleteVersion {
 			newSheet.Version = sheet.Version + 1
-			newSheet.IsCompleteVersion = false
+			isUpdateCompleteVersion = true
 		} else {
 			newSheet.Version = sheet.Version
 		}
@@ -174,7 +175,7 @@ func FileUpload(c *gin.Context) {
 		newSheet.LastModifyTime = time.Now()
 		newSheet.LastModifierIP = c.Request.RemoteAddr
 		newSheet.LastModifierName = user.UserName
-		err := db.DB.MysqlDB.UpdateSheet(&newSheet)
+		err := db.DB.MysqlDB.UpdateSheet(&newSheet, isUpdateCompleteVersion)
 		if err != nil {
 			log.NewError(operationID, "UpdateSheet db operation error", err.Error(), req)
 			resp.ErrCode = constant.SheetDBError

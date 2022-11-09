@@ -38,12 +38,18 @@ func (s *Sheet) GetSheetInfo(sheetID string) (*Sheet, error) {
 func (s *Sheet) InsertSheet(temp *Sheet) error {
 	return utils.Wrap(DB.MysqlDB.db.Create(temp).Error, "InsertSheet failed")
 }
-func (s *Sheet) UpdateSheet(sheet *Sheet) error {
+func (s *Sheet) UpdateSheet(sheet *Sheet, isUpdateCompleteVersion bool) error {
 	t := DB.MysqlDB.db.Updates(sheet)
 	if t.RowsAffected == 0 {
 		return utils.Wrap(errors.New("RowsAffected == 0"), "no update")
 	}
-	return utils.Wrap(t.Error, "UpdateSheet failed")
+	if t.Error != nil {
+		return utils.Wrap(t.Error, "UpdateSheet failed")
+	}
+	if isUpdateCompleteVersion {
+		return s.UpdateSheetColumns(sheet.SheetID, map[string]interface{}{"is_complete_version": false})
+	}
+	return nil
 }
 func (s *Sheet) UpdateSheetColumns(sheetID string, args map[string]interface{}) error {
 	c := Sheet{SheetID: sheetID}
