@@ -23,10 +23,9 @@ type VersionUpLoadRecord struct {
 	IsPurchase         string    `gorm:"column:is_purchase;type:varchar(64)" json:"isPurchase"`
 	StandardCraft      string    `gorm:"column:standard_craft;type:varchar(64)" json:"standardCraft"`
 	SubMaterialKey     string    `gorm:"column:sub_material_key;type:varchar(1024)" json:"subMaterialKey"`
-	LastModifyTime     time.Time `gorm:"column:last_modify_time;index:index_last_modify_time;" json:"lastModifyTime"`
-	LastModifierUserID string    `gorm:"column:last_modifier_userID;char(64)" json:"lastModifierUserID"`
-	LastModifierName   string    `gorm:"column:last_modifier_name;type:varchar(64)" json:"lastModifierName"`
-	LastModifyCount    int32     `gorm:"column:last_modify_count" json:"lastModifyCount"`
+	CommitTime         time.Time `gorm:"column:commit_time;index:index_commit_time;" json:"commitTime"`
+	ModifierUserID     string    `gorm:"column:modifier_userID;char(64)" json:"modifierUserID"`
+	ModifierName       string    `gorm:"column:modifier_name;type:varchar(64)" json:"modifierName"`
 	Ex                 string    `gorm:"column:ex;type:varchar(1024)"  json:"ex,omitempty"`
 	DB                 *gorm.DB  `gorm:"-" json:"-"`
 }

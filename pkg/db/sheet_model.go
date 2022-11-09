@@ -12,6 +12,7 @@ type Sheet struct {
 	SheetID            string    `gorm:"column:sheet_id;primary_key;type:char(64)" json:"sheetID"`
 	CommodityName      string    `gorm:"column:commodity_name;type:char(64)" json:"commodityName"`
 	Version            int32     `gorm:"column:version" json:"version"`
+	SubVersion         int32     `gorm:"column:sub_version" json:"subVersion"`
 	IsCompleteVersion  bool      `gorm:"column:is_complete_version" json:"isCompleteVersion"`
 	Code               string    `gorm:"column:code;type:varchar(64)" json:"code"`
 	CreatorUserID      string    `gorm:"column:creator_user_id;size:64" json:"creatorUserID"`
@@ -39,6 +40,14 @@ func (s *Sheet) InsertSheet(temp *Sheet) error {
 }
 func (s *Sheet) UpdateSheet(sheet *Sheet) error {
 	t := DB.MysqlDB.db.Updates(sheet)
+	if t.RowsAffected == 0 {
+		return utils.Wrap(errors.New("RowsAffected == 0"), "no update")
+	}
+	return utils.Wrap(t.Error, "UpdateSheet failed")
+}
+func (s *Sheet) UpdateSheetColumns(sheetID string, args map[string]interface{}) error {
+	c := Sheet{SheetID: sheetID}
+	t := DB.MysqlDB.db.Model(&c).Updates(args)
 	if t.RowsAffected == 0 {
 		return utils.Wrap(errors.New("RowsAffected == 0"), "no update")
 	}

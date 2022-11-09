@@ -59,6 +59,28 @@ func FileUpload(c *gin.Context) {
 			c.JSON(http.StatusOK, resp)
 			return
 		}
+		record := new(db.VersionUpLoadRecord)
+		record.SheetID = req.SheetID
+		record.MaterialKey = v.MaterialKey
+		record.MaterialStandard = v.MaterialStandard
+		record.Version = 1
+		record.SubVersion = 1
+		record.MaterialCategory = temp.MaterialCategory
+		record.MaterialName = temp.MaterialName
+		record.MaterialSubstance = temp.MaterialSubstance
+		record.Quantity = v.Quantity
+		record.MaterialUnit = temp.MaterialUnit
+		record.ProcessingCategory = temp.ProcessingCategory
+		record.RemarkOne = temp.RemarkOne
+		record.RemarkTwo = temp.RemarkTwo
+		record.IsPurchase = temp.IsPurchase
+		record.StandardCraft = temp.StandardCraft
+		record.SubMaterialKey = utils.StructToJsonString(v.SubMaterialKey)
+		record.CommitTime = time.Now()
+		record.ModifierUserID = userID
+		record.ModifierName = user.UserName
+		recordList = append(recordList, record)
+
 		material := new(db.SheetAndMaterial)
 		material.SheetID = req.SheetID
 		material.MaterialKey = v.MaterialKey
@@ -92,6 +114,7 @@ func FileUpload(c *gin.Context) {
 	}
 
 	//分布式锁抢占成功
+	//摸具信息存储
 	sheet, err := db.DB.MysqlDB.GetSheetInfo(req.SheetID)
 	if err != nil {
 		tx := db.DB.MysqlDB.Db().Begin()
@@ -101,6 +124,7 @@ func FileUpload(c *gin.Context) {
 		sheet.Code = temp.Code
 		sheet.CreatorUserID = userID
 		sheet.Version = 1
+		sheet.SubVersion = 1
 		sheet.IsCompleteVersion = false
 		sheet.LastModifierIP = c.Request.RemoteAddr
 		sheet.CreateTime = time.Now()
@@ -124,17 +148,27 @@ func FileUpload(c *gin.Context) {
 			c.JSON(http.StatusOK, resp)
 			return
 		}
+		err = db.DB.MysqlDB.BatchInsertVersionUpLoadRecordList(recordList)
+		if err != nil {
+			tx.Rollback()
+			log.NewError(operationID, "BatchInsertVersionUpLoadRecordList db operation error", err.Error(), req)
+			resp.ErrCode = constant.SheetDBError
+			resp.ErrMsg = "BatchInsertVersionUpLoadRecordList err"
+			c.JSON(http.StatusOK, resp)
+			return
+		}
 		tx.Commit()
 
 	} else {
 		tx := db.DB.MysqlDB.Db().Begin()
 		var newSheet db.Sheet
 		newSheet.SheetID = sheet.SheetID
-		if sheet.IsCompleteVersion  {
+		if sheet.IsCompleteVersion {
 			newSheet.Version = sheet.Version + 1
-		}else{
+		} else {
 			newSheet.Version = sheet.Version
 		}
+		newSheet.SubVersion = newSheet.SubVersion + 1
 		newSheet.LastModifierUserID = userID
 		newSheet.LastModifyTime = time.Now()
 		newSheet.LastModifierIP = c.Request.RemoteAddr
@@ -148,7 +182,7 @@ func FileUpload(c *gin.Context) {
 			return
 		}
 		for _, material := range tempMaterialList {
-			oldMaterialInfo, err := db.DB.MysqlDB.GetSheetAndMaterialInfo(material.SheetID, material.MaterialKey, material.MaterialStandard,newSheet.Version)
+			oldMaterialInfo, err := db.DB.MysqlDB.GetSheetAndMaterialInfo(material.SheetID, material.MaterialKey, material.MaterialStandard, newSheet.Version)
 			if err != nil {
 				material.Version = newSheet.Version
 				newErr := db.DB.MysqlDB.InsertSheetAndMaterial(material)
@@ -170,6 +204,7 @@ func FileUpload(c *gin.Context) {
 				oldMaterialInfo.SubMaterialKey = utils.StructToJsonString(utils.RemoveRepeatedStringInList(a))
 				oldMaterialInfo.LastModifyCount = material.LastModifyCount
 				oldMaterialInfo.LastModifierUserID = material.LastModifierUserID
+
 				oldMaterialInfo.LastModifyTime = material.LastModifyTime
 				oldMaterialInfo.LastModifierName = material.LastModifierName
 				newErr := db.DB.MysqlDB.UpdateSheetAndMaterial(oldMaterialInfo)
@@ -184,6 +219,19 @@ func FileUpload(c *gin.Context) {
 
 			}
 
+		}
+		for _, record := range recordList {
+			record.Version = newSheet.Version
+			record.SubVersion = newSheet.SubVersion
+		}
+		err = db.DB.MysqlDB.BatchInsertVersionUpLoadRecordList(recordList)
+		if err != nil {
+			tx.Rollback()
+			log.NewError(operationID, "BatchInsertVersionUpLoadRecordList db operation error", err.Error(), req)
+			resp.ErrCode = constant.SheetDBError
+			resp.ErrMsg = "BatchInsertVersionUpLoadRecordList err"
+			c.JSON(http.StatusOK, resp)
+			return
 		}
 		tx.Commit()
 	}
@@ -260,7 +308,6 @@ func GetOneExcelDetail(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-
 func CompleteSheetVersion(c *gin.Context) {
 	operationID := c.Request.Header.Get("operationID")
 	tokenString := c.Request.Header.Get("token")
@@ -295,8 +342,7 @@ func CompleteSheetVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	sheet.IsCompleteVersion = true
-	err = db.DB.MysqlDB.UpdateSheet(sheet)
+	err = db.DB.MysqlDB.UpdateSheetColumns(sheet.SheetID, map[string]interface{}{"is_complete_version": true, "sub_version": 0})
 	if err != nil {
 		log.NewError(operationID, "UpdateSheet db operation error", err.Error(), req)
 		resp.ErrCode = constant.SheetDBError
@@ -341,19 +387,19 @@ func RevokeSheetVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	if sheet.Version -1< 0{
+	if sheet.Version-1 < 0 {
 		log.NewError(operationID, "sheet can not be revoked")
 		resp.ErrCode = constant.SheetVersionZero
 		resp.ErrMsg = "sheet can not be revoked"
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	oldVersion:=sheet.Version
+	oldVersion := sheet.Version
 	tx := db.DB.MysqlDB.Db().Begin()
-	sheet.IsCompleteVersion = false
-	sheet.Version = sheet.Version -1
-
-	err = db.DB.MysqlDB.UpdateSheet(sheet)
+	sheet.IsCompleteVersion = true
+	sheet.Version = sheet.Version - 1
+	sheet.SubVersion = 0
+	err = db.DB.MysqlDB.UpdateSheetColumns(sheet.SheetID, map[string]interface{}{"is_complete_version": true, "sub_version": 0, "version": sheet.Version - 1})
 	if err != nil {
 		log.NewError(operationID, "UpdateSheet db operation error", err.Error(), req)
 		resp.ErrCode = constant.SheetDBError
@@ -361,7 +407,7 @@ func RevokeSheetVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	err = db.DB.MysqlDB.DeleteSheetAndMaterialInfoBySheetIDAndVersion(req.SheetID,oldVersion)
+	err = db.DB.MysqlDB.DeleteSheetAndMaterialInfoBySheetIDAndVersion(req.SheetID, oldVersion)
 	if err != nil {
 		tx.Rollback()
 		log.NewError(operationID, "DeleteSheetAndMaterialInfoBySheetIDAndVersion db operation error", err.Error(), req)
