@@ -517,6 +517,7 @@ func GetRecordSheetVersion(c *gin.Context) {
 		}
 		}
 
+	result = append(result,&temp)
 	resp.Data.Sheet = sheet
 	resp.Data.VersionUpLoadRecordList = result
 	c.JSON(http.StatusOK, resp)
