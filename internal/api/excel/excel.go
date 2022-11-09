@@ -165,6 +165,7 @@ func FileUpload(c *gin.Context) {
 		newSheet.SheetID = sheet.SheetID
 		if sheet.IsCompleteVersion {
 			newSheet.Version = sheet.Version + 1
+			newSheet.IsCompleteVersion = false
 		} else {
 			newSheet.Version = sheet.Version
 		}
@@ -422,8 +423,8 @@ func RevokeSheetVersion(c *gin.Context) {
 func GetRecordSheetVersion(c *gin.Context) {
 	operationID := c.Request.Header.Get("operationID")
 	tokenString := c.Request.Header.Get("token")
-	req := api.GetOneExcelDetailReq{}
-	resp := api.GetOneExcelDetailResp{}
+	req := api.GetRecordSheetVersionReq{}
+	resp := api.GetRecordSheetVersionResp{}
 	log.NewDebug(operationID, "req", req)
 	defer log.NewDebug(operationID, "resp", resp)
 	userID, err := token.GetUserIDFromToken(tokenString)
@@ -446,7 +447,7 @@ func GetRecordSheetVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	sheetAndMaterialList, err := db.DB.MysqlDB.GetSheetAndMaterialInfoBySheetID(req.SheetID)
+	recordList, err := db.DB.MysqlDB.GetVersionRecordList(req.SheetID, sheet.Version)
 	if err != nil {
 		log.NewError(operationID, "material infos not exist", err.Error())
 		resp.ErrCode = constant.NotSheetInfo
@@ -455,6 +456,6 @@ func GetRecordSheetVersion(c *gin.Context) {
 		return
 	}
 	resp.Data.Sheet = sheet
-	resp.Data.SheetMaterialList = sheetAndMaterialList
+	resp.Data.VersionUpLoadRecordList = recordList
 	c.JSON(http.StatusOK, resp)
 }

@@ -40,3 +40,14 @@ func (s *VersionUpLoadRecord) BatchInsertVersionUpLoadRecordList(recordList []*V
 	}
 	return utils.Wrap(DB.MysqlDB.db.Create(recordList).Error, "BatchInsertVersionUpLoadRecordList failed")
 }
+func (s *VersionUpLoadRecord) GetVersionRecordList(sheetID string, version int32) ([]*VersionUpLoadRecord, error) {
+	var temp []VersionUpLoadRecord
+	err := DB.MysqlDB.db.Debug().Model(&temp).Where("sheet_id = ? And version = ?", sheetID, version).Order("commitTime DESC").Find(&temp).Error
+
+	var transfer []*VersionUpLoadRecord
+	for _, v := range temp {
+		v1 := v
+		transfer = append(transfer, &v1)
+	}
+	return transfer, utils.Wrap(err, "GetVersionRecordList failed")
+}

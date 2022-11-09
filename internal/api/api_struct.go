@@ -57,6 +57,16 @@ type (
 	RevokeSheetVersionResp struct {
 		CommResp
 	}
+	GetRecordSheetVersionReq struct {
+		SheetID string `json:"sheetID" binding:"required"`
+	}
+	GetRecordSheetVersionResp struct {
+		CommResp
+		Data struct {
+			*db.Sheet
+			VersionUpLoadRecordList []*db.VersionUpLoadRecord `json:"versionUpLoadRecord"`
+		} `json:"data,omitempty"`
+	}
 )
 type CommResp struct {
 	ErrCode int32  `json:"errCode"`
