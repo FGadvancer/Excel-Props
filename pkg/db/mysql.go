@@ -93,7 +93,7 @@ func initMysqlDB() {
 
 	fmt.Println("open mysql ok ", dsn)
 	db.AutoMigrate(
-		&Register{}, &Sheet{}, &SheetAndMaterial{}, &Template1{}, &Template2{})
+		&Register{}, &Sheet{}, &SheetAndMaterial{}, &Template1{}, &Template2{}, &VersionUpLoadRecord{})
 	db.Set("gorm:table_options", "CHARSET=utf8")
 	db.Set("gorm:table_options", "collation=utf8_unicode_ci")
 
@@ -119,6 +119,10 @@ func initMysqlDB() {
 	if !db.Migrator().HasTable(&Template2{}) {
 		fmt.Println("CreateTable Template2")
 		db.Migrator().CreateTable(&Template2{})
+	}
+	if !db.Migrator().HasTable(&VersionUpLoadRecord{}) {
+		fmt.Println("CreateTable Template2")
+		db.Migrator().CreateTable(&VersionUpLoadRecord{})
 	}
 	DB.MysqlDB.db = db
 	DB.MysqlDB.Register = NewRegister(db)
