@@ -37,9 +37,9 @@ func NewSheetAndMaterial(DB *gorm.DB) *SheetAndMaterial {
 	return &SheetAndMaterial{DB: DB}
 }
 
-func (s *SheetAndMaterial) GetSheetAndMaterialInfo(sheetID string, materialKey string, materialStandard string) (*SheetAndMaterial, error) {
+func (s *SheetAndMaterial) GetSheetAndMaterialInfo(sheetID string, materialKey string, materialStandard string,version int32) (*SheetAndMaterial, error) {
 	temp := SheetAndMaterial{}
-	err := DB.MysqlDB.db.Model(&temp).Where("sheet_id = ? And material_key = ? And material_standard = ?", sheetID, materialKey, materialStandard).Take(&temp).Error
+	err := DB.MysqlDB.db.Model(&temp).Where("sheet_id = ? And material_key = ? And material_standard = ? And version = ?", sheetID, materialKey, materialStandard,version).Take(&temp).Error
 	return &temp, utils.Wrap(err, "")
 }
 func (s *SheetAndMaterial) BatchInsertSheetAndMaterialList(materialList []*SheetAndMaterial) error {

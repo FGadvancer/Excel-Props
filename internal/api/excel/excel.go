@@ -130,7 +130,11 @@ func FileUpload(c *gin.Context) {
 		tx := db.DB.MysqlDB.Db().Begin()
 		var newSheet db.Sheet
 		newSheet.SheetID = sheet.SheetID
-		newSheet.Version = sheet.Version + 1
+		if sheet.IsCompleteVersion  {
+			newSheet.Version = sheet.Version + 1
+		}else{
+			newSheet.Version = sheet.Version
+		}
 		newSheet.LastModifierUserID = userID
 		newSheet.LastModifyTime = time.Now()
 		newSheet.LastModifierIP = c.Request.RemoteAddr
@@ -144,8 +148,9 @@ func FileUpload(c *gin.Context) {
 			return
 		}
 		for _, material := range tempMaterialList {
-			oldMaterialInfo, err := db.DB.MysqlDB.GetSheetAndMaterialInfo(material.SheetID, material.MaterialKey, material.MaterialStandard)
+			oldMaterialInfo, err := db.DB.MysqlDB.GetSheetAndMaterialInfo(material.SheetID, material.MaterialKey, material.MaterialStandard,newSheet.Version)
 			if err != nil {
+				material.Version = newSheet.Version
 				newErr := db.DB.MysqlDB.InsertSheetAndMaterial(material)
 				if newErr != nil {
 					tx.Rollback()
