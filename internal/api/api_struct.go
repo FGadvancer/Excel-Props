@@ -1,6 +1,9 @@
 package api
 
-import "Excel-Props/pkg/db"
+import (
+	"Excel-Props/pkg/db"
+	"time"
+)
 
 type (
 	LoginReq struct {
@@ -64,7 +67,7 @@ type (
 		CommResp
 		Data struct {
 			*db.Sheet
-			VersionUpLoadRecordList []*db.VersionUpLoadRecord `json:"versionUpLoadRecord"`
+			VersionUpLoadRecordList []*AllRecordList `json:"versionUpLoadRecord"`
 		} `json:"data,omitempty"`
 	}
 )
@@ -77,4 +80,12 @@ type SheetObject struct {
 	SubMaterialKey   []string `json:"subMaterialKey" `
 	MaterialStandard string   `json:"materialStandard" `
 	Quantity         int32    `json:"quantity" `
+}
+type AllRecordList struct {
+	SubVersion         int32     ` json:"subVersion"`
+	CommitTime         time.Time ` json:"commitTime"`
+	ModifierUserID     string    `json:"modifierUserID"`
+	ModifierName       string    ` json:"modifierName"`
+    RecordList        []*db.VersionUpLoadRecord `json:"recordList"`
+
 }

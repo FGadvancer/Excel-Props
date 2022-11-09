@@ -489,7 +489,35 @@ func GetRecordSheetVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+	var result []*api.AllRecordList
+
+	var temp api.AllRecordList
+	for i := 0; i < len(recordList); i++ {
+
+		if i == 0 || recordList[i].SubVersion == recordList[i-1].SubVersion {
+			temp.CommitTime = recordList[i].CommitTime
+			temp.SubVersion = recordList[i].SubVersion
+			temp.ModifierUserID = recordList[i].ModifierUserID
+			temp.ModifierName = recordList[i].ModifierName
+			temp.RecordList = append(temp.RecordList,recordList[i])
+		}else{
+			args:=new(api.AllRecordList)
+			args.RecordList = temp.RecordList
+			args.CommitTime = temp.CommitTime
+			args.SubVersion = temp.SubVersion
+			args.ModifierUserID = temp.ModifierUserID
+			args.ModifierName = temp.ModifierName
+			result = append(result,args)
+			temp.CommitTime =time.Time{}
+			temp.SubVersion = 0
+			temp.ModifierUserID = ""
+			temp.ModifierName = ""
+			temp.RecordList = nil
+			temp.RecordList = append(temp.RecordList,recordList[i])
+		}
+		}
+
 	resp.Data.Sheet = sheet
-	resp.Data.VersionUpLoadRecordList = recordList
+	resp.Data.VersionUpLoadRecordList = result
 	c.JSON(http.StatusOK, resp)
 }
