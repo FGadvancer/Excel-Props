@@ -508,10 +508,10 @@ func GetRecordSheetVersion(c *gin.Context) {
 			args.ModifierUserID = temp.ModifierUserID
 			args.ModifierName = temp.ModifierName
 			result = append(result,args)
-			temp.CommitTime =time.Time{}
-			temp.SubVersion = 0
-			temp.ModifierUserID = ""
-			temp.ModifierName = ""
+			temp.CommitTime = recordList[i].CommitTime
+			temp.SubVersion = recordList[i].SubVersion
+			temp.ModifierUserID = recordList[i].ModifierUserID
+			temp.ModifierName = recordList[i].ModifierName
 			temp.RecordList = nil
 			temp.RecordList = append(temp.RecordList,recordList[i])
 		}
