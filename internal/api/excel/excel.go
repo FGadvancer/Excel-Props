@@ -328,7 +328,15 @@ func CompleteSheetVersion(c *gin.Context) {
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
-
+	//抢占分布式锁
+	err = db.DB.Redis.LockSheetID(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "this sheetID locked by others ", err.Error(), req)
+		resp.ErrCode = constant.SheetBusy
+		resp.ErrMsg = "this sheetID locked by others"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
 	sheet, err := db.DB.MysqlDB.GetSheetInfo(req.SheetID)
 	if err != nil {
 		log.NewError(operationID, "sheet info not exist", err.Error())
@@ -352,6 +360,11 @@ func CompleteSheetVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+	//解开分布式锁
+	err = db.DB.Redis.UnLockSheetID(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "unLockSheetID err:", err.Error(), req)
+	}
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -371,6 +384,15 @@ func RevokeSheetVersion(c *gin.Context) {
 		return
 	}
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
+		return
+	}
+	//抢占分布式锁
+	err = db.DB.Redis.LockSheetID(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "this sheetID locked by others ", err.Error(), req)
+		resp.ErrCode = constant.SheetBusy
+		resp.ErrMsg = "this sheetID locked by others"
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
@@ -398,9 +420,6 @@ func RevokeSheetVersion(c *gin.Context) {
 	}
 	oldVersion := sheet.Version
 	tx := db.DB.MysqlDB.Db().Begin()
-	sheet.IsCompleteVersion = true
-	sheet.Version = sheet.Version - 1
-	sheet.SubVersion = 0
 	err = db.DB.MysqlDB.UpdateSheetColumns(sheet.SheetID, map[string]interface{}{"is_complete_version": true, "sub_version": 0, "version": sheet.Version - 1})
 	if err != nil {
 		log.NewError(operationID, "UpdateSheet db operation error", err.Error(), req)
@@ -419,6 +438,11 @@ func RevokeSheetVersion(c *gin.Context) {
 		return
 	}
 	tx.Commit()
+	//解开分布式锁
+	err = db.DB.Redis.UnLockSheetID(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "unLockSheetID err:", err.Error(), req)
+	}
 	c.JSON(http.StatusOK, resp)
 }
 func GetRecordSheetVersion(c *gin.Context) {
