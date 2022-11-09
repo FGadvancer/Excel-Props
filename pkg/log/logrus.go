@@ -49,6 +49,7 @@ func loggerInit(moduleName string) *Logger {
 		HideKeys:        false,
 		FieldsOrder:     []string{"PID", "FilePath", "OperationID"},
 	})
+	logger.Formatter = &logrus.JSONFormatter{}
 	//File name and line number display hook
 	logger.AddHook(newFileHook())
 
