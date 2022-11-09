@@ -45,6 +45,18 @@ type (
 			SheetMaterialList []*db.SheetAndMaterial `json:"sheetMaterialList"`
 		} `json:"data,omitempty"`
 	}
+	CompleteSheetVersionReq struct {
+		SheetID string `json:"sheetID" binding:"required"`
+	}
+	CompleteSheetVersionResp struct {
+		CommResp
+	}
+	RevokeSheetVersionReq struct {
+		SheetID string `json:"sheetID" binding:"required"`
+	}
+	RevokeSheetVersionResp struct {
+		CommResp
+	}
 )
 type CommResp struct {
 	ErrCode int32  `json:"errCode"`

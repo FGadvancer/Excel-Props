@@ -49,6 +49,12 @@ func main() {
 		//fileRouterGroup.POST("/get_generated_excel_files", excel.SetGlobalRecvMessageOpt)
 		fileRouterGroup.POST("/get_all_generated_excel_list", excel.GetAllExcelFiles)
 		fileRouterGroup.POST("/get_excel_detail", excel.GetOneExcelDetail)
+		fileRouterGroup.POST("/complete_sheet_version", excel.CompleteSheetVersion)
+		fileRouterGroup.POST("/revoke_sheet_version", excel.RevokeSheetVersion)
+		fileRouterGroup.POST("/get_record_sheet_version", excel.GetRecordSheetVersion)
+
+
+
 	}
 
 	defaultPorts := config.Config.Api.GinPort

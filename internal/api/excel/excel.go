@@ -49,7 +49,7 @@ func FileUpload(c *gin.Context) {
 		return
 	}
 	var tempMaterialList []*db.SheetAndMaterial
-	//var recordList []*db.VersionUpLoadRecord
+	var recordList []*db.VersionUpLoadRecord
 	for _, v := range req.SheetList {
 		temp, err := db.DB.MysqlDB.GetMaterialInfo(v.MaterialKey)
 		if err != nil {
@@ -219,7 +219,161 @@ func GetAllExcelFiles(c *gin.Context) {
 	resp.Data.SheetList = sheetList
 	c.JSON(http.StatusOK, resp)
 }
+
 func GetOneExcelDetail(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+	req := api.GetOneExcelDetailReq{}
+	resp := api.GetOneExcelDetailResp{}
+	log.NewDebug(operationID, "req", req)
+	defer log.NewDebug(operationID, "resp", resp)
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error(), userID)
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
+		return
+	}
+
+	sheet, err := db.DB.MysqlDB.GetSheetInfo(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "sheet info not exist", err.Error())
+		resp.ErrCode = constant.NotSheetInfo
+		resp.ErrMsg = "sheet info not exist"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	sheetAndMaterialList, err := db.DB.MysqlDB.GetSheetAndMaterialInfoBySheetID(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "material infos not exist", err.Error())
+		resp.ErrCode = constant.NotSheetInfo
+		resp.ErrMsg = "material infos not exist"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	resp.Data.Sheet = sheet
+	resp.Data.SheetMaterialList = sheetAndMaterialList
+	c.JSON(http.StatusOK, resp)
+}
+
+
+func CompleteSheetVersion(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+	req := api.CompleteSheetVersionReq{}
+	resp := api.CompleteSheetVersionResp{}
+	log.NewDebug(operationID, "req", req)
+	defer log.NewDebug(operationID, "resp", resp)
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error(), userID)
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
+		return
+	}
+
+	sheet, err := db.DB.MysqlDB.GetSheetInfo(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "sheet info not exist", err.Error())
+		resp.ErrCode = constant.NotSheetInfo
+		resp.ErrMsg = "sheet info not exist"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if sheet.IsCompleteVersion {
+		log.NewError(operationID, "sheet has been completed")
+		resp.ErrCode = constant.HasCompleteVersion
+		resp.ErrMsg = "sheet has been completed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	sheet.IsCompleteVersion = true
+	err = db.DB.MysqlDB.UpdateSheet(sheet)
+	if err != nil {
+		log.NewError(operationID, "UpdateSheet db operation error", err.Error(), req)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "UpdateSheet err"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+func RevokeSheetVersion(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+	req := api.RevokeSheetVersionReq{}
+	resp := api.RevokeSheetVersionResp{}
+	log.NewDebug(operationID, "req", req)
+	defer log.NewDebug(operationID, "resp", resp)
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error(), userID)
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
+		return
+	}
+
+	sheet, err := db.DB.MysqlDB.GetSheetInfo(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "sheet info not exist", err.Error())
+		resp.ErrCode = constant.NotSheetInfo
+		resp.ErrMsg = "sheet info not exist"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if sheet.IsCompleteVersion {
+		log.NewError(operationID, "sheet has been completed")
+		resp.ErrCode = constant.HasCompleteVersion
+		resp.ErrMsg = "sheet has been completed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if sheet.Version -1< 0{
+		log.NewError(operationID, "sheet can not be revoked")
+		resp.ErrCode = constant.SheetVersionZero
+		resp.ErrMsg = "sheet can not be revoked"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	oldVersion:=sheet.Version
+	tx := db.DB.MysqlDB.Db().Begin()
+	sheet.IsCompleteVersion = false
+	sheet.Version = sheet.Version -1
+
+	err = db.DB.MysqlDB.UpdateSheet(sheet)
+	if err != nil {
+		log.NewError(operationID, "UpdateSheet db operation error", err.Error(), req)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "UpdateSheet err"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	err = db.DB.MysqlDB.DeleteSheetAndMaterialInfoBySheetIDAndVersion(req.SheetID,oldVersion)
+	if err != nil {
+		tx.Rollback()
+		log.NewError(operationID, "DeleteSheetAndMaterialInfoBySheetIDAndVersion db operation error", err.Error(), req)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "DeleteSheetAndMaterialInfoBySheetIDAndVersion err"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	tx.Commit()
+	c.JSON(http.StatusOK, resp)
+}
+func GetRecordSheetVersion(c *gin.Context) {
 	operationID := c.Request.Header.Get("operationID")
 	tokenString := c.Request.Header.Get("token")
 	req := api.GetOneExcelDetailReq{}

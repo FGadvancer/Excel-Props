@@ -71,3 +71,6 @@ func (s *SheetAndMaterial) GetSheetAndMaterialInfoBySheetID(sheetID string) ([]*
 	}
 	return transfer, utils.Wrap(err, "GetSheetAndMaterialInfoBySheetID failed")
 }
+func (s *SheetAndMaterial)DeleteSheetAndMaterialInfoBySheetIDAndVersion(sheetID string,version int32) error {
+	return DB.MysqlDB.db.Where("sheet_id=? and version=? ", sheetID, version).Delete(&SheetAndMaterial{}).Error
+}

@@ -12,6 +12,8 @@ const (
 	SheetBusy               = 106
 	SheetDBError            = 107
 	NotSheetInfo            = 108
+	HasCompleteVersion      = 109
+	SheetVersionZero        = 110
 )
 
 type ErrInfo struct {
