@@ -51,3 +51,7 @@ func (s *VersionUpLoadRecord) GetVersionRecordList(sheetID string, version int32
 	}
 	return transfer, utils.Wrap(err, "GetVersionRecordList failed")
 }
+
+func (s *VersionUpLoadRecord) DeleteVersionRecordListBySheetIDAndVersion(sheetID string, version int32) error {
+	return DB.MysqlDB.db.Where("sheet_id=? and version=? ", sheetID, version).Delete(&VersionUpLoadRecord{}).Error
+}

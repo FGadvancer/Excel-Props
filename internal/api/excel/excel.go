@@ -437,6 +437,15 @@ func RevokeSheetVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+	err = db.DB.MysqlDB.DeleteVersionRecordListBySheetIDAndVersion(req.SheetID, oldVersion)
+	if err != nil {
+		tx.Rollback()
+		log.NewError(operationID, "DeleteVersionRecordListBySheetIDAndVersion db operation error", err.Error(), req)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "DeleteVersionRecordListBySheetIDAndVersion err"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
 	tx.Commit()
 	//解开分布式锁
 	err = db.DB.Redis.UnLockSheetID(req.SheetID)
