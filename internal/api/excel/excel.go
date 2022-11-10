@@ -420,14 +420,26 @@ func RevokeSheetVersion(c *gin.Context) {
 	}
 	oldVersion := sheet.Version
 	tx := db.DB.MysqlDB.Db().Begin()
-	err = db.DB.MysqlDB.UpdateSheetColumns(sheet.SheetID, map[string]interface{}{"is_complete_version": true, "sub_version": 0, "version": sheet.Version - 1})
-	if err != nil {
-		log.NewError(operationID, "UpdateSheet db operation error", err.Error(), req)
-		resp.ErrCode = constant.SheetDBError
-		resp.ErrMsg = "UpdateSheet err"
-		c.JSON(http.StatusOK, resp)
-		return
+	if sheet.Version-1 == 0 {
+		err = db.DB.MysqlDB.DeleteSheet(sheet.SheetID)
+		if err != nil {
+			log.NewError(operationID, "DeleteSheet db operation error", err.Error(), req)
+			resp.ErrCode = constant.SheetDBError
+			resp.ErrMsg = "DeleteSheet err"
+			c.JSON(http.StatusOK, resp)
+			return
+		}
+	} else {
+		err = db.DB.MysqlDB.UpdateSheetColumns(sheet.SheetID, map[string]interface{}{"is_complete_version": true, "sub_version": 0, "version": sheet.Version - 1})
+		if err != nil {
+			log.NewError(operationID, "UpdateSheet db operation error", err.Error(), req)
+			resp.ErrCode = constant.SheetDBError
+			resp.ErrMsg = "UpdateSheet err"
+			c.JSON(http.StatusOK, resp)
+			return
+		}
 	}
+
 	err = db.DB.MysqlDB.DeleteSheetAndMaterialInfoBySheetIDAndVersion(req.SheetID, oldVersion)
 	if err != nil {
 		tx.Rollback()

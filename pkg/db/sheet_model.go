@@ -60,6 +60,10 @@ func (s *Sheet) UpdateSheetColumns(sheetID string, args map[string]interface{}) 
 	return utils.Wrap(t.Error, "UpdateSheet failed")
 }
 
+func (s *Sheet) DeleteSheet(sheetID string) error {
+	return DB.MysqlDB.db.Where("sheet_id=? ", sheetID).Delete(&Sheet{}).Error
+}
+
 func (s *Sheet) GetAllSheetsInfo() ([]*Sheet, error) {
 	var sheetList []Sheet
 	err := DB.MysqlDB.db.Debug().Order("last_modify_time DESC").Find(&sheetList).Error
