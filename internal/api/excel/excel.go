@@ -17,9 +17,6 @@ func FileUpload(c *gin.Context) {
 	tokenString := c.Request.Header.Get("token")
 	req := api.ExcelFileUploadReq{}
 	resp := api.ExcelFileUploadResp{}
-	log.NewDebug(operationID, "req", req)
-	defer log.NewDebug(operationID, "resp", resp)
-	//
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error())
@@ -31,6 +28,7 @@ func FileUpload(c *gin.Context) {
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
+	log.NewDebug(operationID, "req", req)
 	user, err := db.DB.MysqlDB.GetAccountInfo(userID)
 	if err != nil {
 		log.NewError(operationID, "not user info", err.Error(), req)
@@ -242,6 +240,7 @@ func FileUpload(c *gin.Context) {
 	if err != nil {
 		log.NewError(operationID, "unLockSheetID err:", err.Error(), req)
 	}
+	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
 func GetAllExcelFiles(c *gin.Context) {
@@ -249,7 +248,6 @@ func GetAllExcelFiles(c *gin.Context) {
 	tokenString := c.Request.Header.Get("token")
 	resp := api.GetAllExcelFilesResp{}
 	log.NewDebug(operationID, "req", tokenString)
-	defer log.NewDebug(operationID, "resp", resp)
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error())
@@ -267,6 +265,7 @@ func GetAllExcelFiles(c *gin.Context) {
 		return
 	}
 	resp.Data.SheetList = sheetList
+   log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -275,8 +274,7 @@ func GetOneExcelDetail(c *gin.Context) {
 	tokenString := c.Request.Header.Get("token")
 	req := api.GetOneExcelDetailReq{}
 	resp := api.GetOneExcelDetailResp{}
-	log.NewDebug(operationID, "req", req)
-	defer log.NewDebug(operationID, "resp", resp)
+
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error(), userID)
@@ -288,7 +286,7 @@ func GetOneExcelDetail(c *gin.Context) {
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
-
+	log.NewDebug(operationID, "req", req)
 	sheet, err := db.DB.MysqlDB.GetSheetInfo(req.SheetID)
 	if err != nil {
 		log.NewError(operationID, "sheet info not exist", err.Error())
@@ -307,6 +305,7 @@ func GetOneExcelDetail(c *gin.Context) {
 	}
 	resp.Data.Sheet = sheet
 	resp.Data.SheetMaterialList = sheetAndMaterialList
+    log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -315,8 +314,6 @@ func CompleteSheetVersion(c *gin.Context) {
 	tokenString := c.Request.Header.Get("token")
 	req := api.CompleteSheetVersionReq{}
 	resp := api.CompleteSheetVersionResp{}
-	log.NewDebug(operationID, "req", req)
-	defer log.NewDebug(operationID, "resp", resp)
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error(), userID)
@@ -328,6 +325,7 @@ func CompleteSheetVersion(c *gin.Context) {
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
+	log.NewDebug(operationID, "req", req)
 	//抢占分布式锁
 	err = db.DB.Redis.LockSheetID(req.SheetID)
 	if err != nil {
@@ -365,6 +363,7 @@ func CompleteSheetVersion(c *gin.Context) {
 	if err != nil {
 		log.NewError(operationID, "unLockSheetID err:", err.Error(), req)
 	}
+    log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -373,8 +372,7 @@ func RevokeSheetVersion(c *gin.Context) {
 	tokenString := c.Request.Header.Get("token")
 	req := api.RevokeSheetVersionReq{}
 	resp := api.RevokeSheetVersionResp{}
-	log.NewDebug(operationID, "req", req)
-	defer log.NewDebug(operationID, "resp", resp)
+
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error(), userID)
@@ -386,6 +384,7 @@ func RevokeSheetVersion(c *gin.Context) {
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
+	log.NewDebug(operationID, "req", req)
 	//抢占分布式锁
 	err = db.DB.Redis.LockSheetID(req.SheetID)
 	if err != nil {
@@ -464,6 +463,8 @@ func RevokeSheetVersion(c *gin.Context) {
 	if err != nil {
 		log.NewError(operationID, "unLockSheetID err:", err.Error(), req)
 	}
+    log.NewDebug(operationID, "resp", resp)
+
 	c.JSON(http.StatusOK, resp)
 }
 func GetRecordSheetVersion(c *gin.Context) {
@@ -471,8 +472,7 @@ func GetRecordSheetVersion(c *gin.Context) {
 	tokenString := c.Request.Header.Get("token")
 	req := api.GetRecordSheetVersionReq{}
 	resp := api.GetRecordSheetVersionResp{}
-	log.NewDebug(operationID, "req", req)
-	defer log.NewDebug(operationID, "resp", resp)
+
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error(), userID)
@@ -484,7 +484,7 @@ func GetRecordSheetVersion(c *gin.Context) {
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
-
+	log.NewDebug(operationID, "req", req)
 	sheet, err := db.DB.MysqlDB.GetSheetInfo(req.SheetID)
 	if err != nil {
 		log.NewError(operationID, "sheet info not exist", err.Error())
@@ -501,7 +501,37 @@ func GetRecordSheetVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+	var result []*api.AllRecordList
+
+	var temp api.AllRecordList
+	for i := 0; i < len(recordList); i++ {
+
+		if i == 0 || recordList[i].SubVersion == recordList[i-1].SubVersion {
+			temp.CommitTime = recordList[i].CommitTime
+			temp.SubVersion = recordList[i].SubVersion
+			temp.ModifierUserID = recordList[i].ModifierUserID
+			temp.ModifierName = recordList[i].ModifierName
+			temp.RecordList = append(temp.RecordList,recordList[i])
+		}else{
+			args:=new(api.AllRecordList)
+			args.RecordList = temp.RecordList
+			args.CommitTime = temp.CommitTime
+			args.SubVersion = temp.SubVersion
+			args.ModifierUserID = temp.ModifierUserID
+			args.ModifierName = temp.ModifierName
+			result = append(result,args)
+			temp.CommitTime = recordList[i].CommitTime
+			temp.SubVersion = recordList[i].SubVersion
+			temp.ModifierUserID = recordList[i].ModifierUserID
+			temp.ModifierName = recordList[i].ModifierName
+			temp.RecordList = nil
+			temp.RecordList = append(temp.RecordList,recordList[i])
+		}
+		}
+
+	result = append(result,&temp)
 	resp.Data.Sheet = sheet
-	resp.Data.VersionUpLoadRecordList = recordList
+	resp.Data.VersionUpLoadRecordList = result
+	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
