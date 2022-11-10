@@ -54,7 +54,7 @@ func main() {
 	for i := 0; i < s.MaxRow; i++ {
 
 		if i > 0 {
-			if s.Cell(i, 0).Value != "" && s.Cell(i, 4).Value != "" {
+			if s.Cell(i, 0).Value != "" {
 				temp := new(db.Template2)
 				temp.MaterialKey = s.Cell(i, 0).Value
 
