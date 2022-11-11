@@ -122,8 +122,12 @@ func initMysqlDB() {
 		db.Migrator().CreateTable(&Template2{})
 	}
 	if !db.Migrator().HasTable(&VersionUpLoadRecord{}) {
-		fmt.Println("CreateTable Template2")
+		fmt.Println("CreateTable VersionUpLoadRecord")
 		db.Migrator().CreateTable(&VersionUpLoadRecord{})
+	}
+	if !db.Migrator().HasTable(&SheetSub{}) {
+		fmt.Println("CreateTable SheetSub")
+		db.Migrator().CreateTable(&SheetSub{})
 	}
 	DB.MysqlDB.db = db
 	DB.MysqlDB.Register = NewRegister(db)
