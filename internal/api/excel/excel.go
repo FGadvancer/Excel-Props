@@ -598,8 +598,6 @@ func RevokeRecordSheetVersion(c *gin.Context) {
 	}
 
 	result = append(result, &temp)
-	resp.Data.Sheet = sheet
-	resp.Data.VersionUpLoadRecordList = result
 	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
