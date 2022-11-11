@@ -44,11 +44,11 @@ func loggerInit(moduleName string) *Logger {
 	logger.SetOutput(writer)
 	// logger.SetOutput(os.Stdout)
 	//Log Console Print Style Setting
-	logger.SetFormatter(&nested.Formatter{
-		TimestampFormat: "2006-01-02 15:04:05.000",
-		HideKeys:        false,
-		FieldsOrder:     []string{"PID", "FilePath", "OperationID"},
-	})
+	//logger.SetFormatter(&nested.Formatter{
+	//	TimestampFormat: "2006-01-02 15:04:05.000",
+	//	HideKeys:        false,
+	//	FieldsOrder:     []string{"PID", "FilePath", "OperationID"},
+	//})
 	logger.Formatter = &logrus.JSONFormatter{}
 	//File name and line number display hook
 	logger.AddHook(newFileHook())
