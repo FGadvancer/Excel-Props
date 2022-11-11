@@ -53,6 +53,8 @@ func main() {
 		fileRouterGroup.POST("/revoke_sheet_version", excel.RevokeSheetVersion)
 		fileRouterGroup.POST("/get_record_sheet_version", excel.GetRecordSheetVersion)
 		fileRouterGroup.POST("/revoke_record_sheet_version", excel.RevokeRecordSheetVersion)
+		fileRouterGroup.POST("/get_sub_sheet_list", excel.GetSubSheetList)
+		fileRouterGroup.POST("/add_sub_sheet_list", excel.AddSubSheetList)
 
 	}
 

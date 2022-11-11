@@ -21,6 +21,7 @@ type mysqlDB struct {
 	*Sheet
 	*SheetAndMaterial
 	*VersionUpLoadRecord
+	*SheetSub
 }
 
 func (m mysqlDB) Db() *gorm.DB {
@@ -131,6 +132,7 @@ func initMysqlDB() {
 	DB.MysqlDB.Sheet = NewSheet(db)
 	DB.MysqlDB.SheetAndMaterial = NewSheetAndMaterial(db)
 	DB.MysqlDB.VersionUpLoadRecord = NewVersionUpLoadRecord(db)
+	DB.MysqlDB.SheetSub = NewSheetSub(db)
 	for i, v := range config.Config.Manager.AppManagerUid {
 		user := Register{}
 		if e := DB.MysqlDB.db.Model(&Register{}).Where("account = ? ", v).Take(&user).Error; e != nil {

@@ -607,3 +607,65 @@ func RevokeRecordSheetVersion(c *gin.Context) {
 	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
+func GetSubSheetList(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+
+	resp := api.GetSubSheetListResp{}
+
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error(), userID)
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+
+	list, err := db.DB.MysqlDB.GetSheetSubList()
+	if err != nil {
+		log.NewError(operationID, "record infos not exist", err.Error())
+		resp.ErrCode = constant.NotRecordInfo
+		resp.ErrMsg = "record infos not exist"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	resp.Data.SubSheetIDList = list
+	log.NewDebug(operationID, "resp", resp)
+	c.JSON(http.StatusOK, resp)
+}
+func AddSubSheetList(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+	req := api.AddSubSheetListReq{}
+	resp := api.AddSubSheetListResp{}
+
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error(), userID)
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
+		return
+	}
+	log.NewDebug(operationID, "req", req)
+	var list []*db.SheetSub
+	for _, v := range req.SubSheetIDList {
+		temp := new(db.SheetSub)
+		temp.SubSheetID = v
+		list = append(list, temp)
+	}
+	err = db.DB.MysqlDB.BatchInsertSheetSubList(list)
+	if err != nil {
+		log.NewError(operationID, "BatchInsertSheetSubList", err.Error())
+		resp.ErrCode = constant.NotRecordInfo
+		resp.ErrMsg = "record infos not exist"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	log.NewDebug(operationID, "resp", resp)
+	c.JSON(http.StatusOK, resp)
+}

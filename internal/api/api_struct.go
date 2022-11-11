@@ -77,6 +77,19 @@ type (
 	RevokeRecordSheetVersionResp struct {
 		CommResp
 	}
+
+	GetSubSheetListResp struct {
+		CommResp
+		Data struct {
+			SubSheetIDList []string `json:"subSheetIDList"`
+		} `json:"data,omitempty"`
+	}
+	AddSubSheetListReq struct {
+		SubSheetIDList []string `json:"subSheetIDList" binding:"required"`
+	}
+	AddSubSheetListResp struct {
+		CommResp
+	}
 )
 type CommResp struct {
 	ErrCode int32  `json:"errCode"`
