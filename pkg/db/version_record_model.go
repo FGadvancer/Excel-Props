@@ -51,7 +51,20 @@ func (s *VersionUpLoadRecord) GetVersionRecordList(sheetID string, version int32
 	}
 	return transfer, utils.Wrap(err, "GetVersionRecordList failed")
 }
+func (s *VersionUpLoadRecord) GetSubVersionRecordList(sheetID string, version int32, subVersion int32) ([]*VersionUpLoadRecord, error) {
+	var temp []VersionUpLoadRecord
+	err := DB.MysqlDB.db.Debug().Model(&temp).Where("sheet_id = ? And version = ? And sub_version=?", sheetID, version, subVersion).Find(&temp).Error
 
+	var transfer []*VersionUpLoadRecord
+	for _, v := range temp {
+		v1 := v
+		transfer = append(transfer, &v1)
+	}
+	return transfer, utils.Wrap(err, "GetSubVersionRecordList failed")
+}
 func (s *VersionUpLoadRecord) DeleteVersionRecordListBySheetIDAndVersion(sheetID string, version int32) error {
 	return DB.MysqlDB.db.Where("sheet_id=? and version=? ", sheetID, version).Delete(&VersionUpLoadRecord{}).Error
+}
+func (s *VersionUpLoadRecord) DeleteSubVersionRecordListBySheetIDAndVersion(sheetID string, version int32, subVersion int32) error {
+	return DB.MysqlDB.db.Where("sheet_id=? and version=? and sub_version=?", sheetID, version, subVersion).Delete(&VersionUpLoadRecord{}).Error
 }

@@ -70,6 +70,13 @@ type (
 			VersionUpLoadRecordList []*AllRecordList `json:"versionUpLoadRecord"`
 		} `json:"data,omitempty"`
 	}
+	RevokeRecordSheetVersionReq struct {
+		SheetID    string `json:"sheetID" binding:"required"`
+		SubVersion int32  ` json:"subVersion" binding:"required"`
+	}
+	RevokeRecordSheetVersionResp struct {
+		CommResp
+	}
 )
 type CommResp struct {
 	ErrCode int32  `json:"errCode"`
@@ -82,10 +89,9 @@ type SheetObject struct {
 	Quantity         int32    `json:"quantity" `
 }
 type AllRecordList struct {
-	SubVersion         int32     ` json:"subVersion"`
-	CommitTime         time.Time ` json:"commitTime"`
-	ModifierUserID     string    `json:"modifierUserID"`
-	ModifierName       string    ` json:"modifierName"`
-    RecordList        []*db.VersionUpLoadRecord `json:"recordList"`
-
+	SubVersion     int32                     ` json:"subVersion"`
+	CommitTime     time.Time                 ` json:"commitTime"`
+	ModifierUserID string                    `json:"modifierUserID"`
+	ModifierName   string                    ` json:"modifierName"`
+	RecordList     []*db.VersionUpLoadRecord `json:"recordList"`
 }

@@ -265,7 +265,7 @@ func GetAllExcelFiles(c *gin.Context) {
 		return
 	}
 	resp.Data.SheetList = sheetList
-   log.NewDebug(operationID, "resp", resp)
+	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -305,7 +305,7 @@ func GetOneExcelDetail(c *gin.Context) {
 	}
 	resp.Data.Sheet = sheet
 	resp.Data.SheetMaterialList = sheetAndMaterialList
-    log.NewDebug(operationID, "resp", resp)
+	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -363,7 +363,7 @@ func CompleteSheetVersion(c *gin.Context) {
 	if err != nil {
 		log.NewError(operationID, "unLockSheetID err:", err.Error(), req)
 	}
-    log.NewDebug(operationID, "resp", resp)
+	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -463,7 +463,7 @@ func RevokeSheetVersion(c *gin.Context) {
 	if err != nil {
 		log.NewError(operationID, "unLockSheetID err:", err.Error(), req)
 	}
-    log.NewDebug(operationID, "resp", resp)
+	log.NewDebug(operationID, "resp", resp)
 
 	c.JSON(http.StatusOK, resp)
 }
@@ -511,25 +511,93 @@ func GetRecordSheetVersion(c *gin.Context) {
 			temp.SubVersion = recordList[i].SubVersion
 			temp.ModifierUserID = recordList[i].ModifierUserID
 			temp.ModifierName = recordList[i].ModifierName
-			temp.RecordList = append(temp.RecordList,recordList[i])
-		}else{
-			args:=new(api.AllRecordList)
+			temp.RecordList = append(temp.RecordList, recordList[i])
+		} else {
+			args := new(api.AllRecordList)
 			args.RecordList = temp.RecordList
 			args.CommitTime = temp.CommitTime
 			args.SubVersion = temp.SubVersion
 			args.ModifierUserID = temp.ModifierUserID
 			args.ModifierName = temp.ModifierName
-			result = append(result,args)
+			result = append(result, args)
 			temp.CommitTime = recordList[i].CommitTime
 			temp.SubVersion = recordList[i].SubVersion
 			temp.ModifierUserID = recordList[i].ModifierUserID
 			temp.ModifierName = recordList[i].ModifierName
 			temp.RecordList = nil
-			temp.RecordList = append(temp.RecordList,recordList[i])
+			temp.RecordList = append(temp.RecordList, recordList[i])
 		}
-		}
+	}
 
-	result = append(result,&temp)
+	result = append(result, &temp)
+	resp.Data.Sheet = sheet
+	resp.Data.VersionUpLoadRecordList = result
+	log.NewDebug(operationID, "resp", resp)
+	c.JSON(http.StatusOK, resp)
+}
+func RevokeRecordSheetVersion(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+	req := api.RevokeRecordSheetVersionReq{}
+	resp := api.RevokeRecordSheetVersionResp{}
+
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error(), userID)
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
+		return
+	}
+	log.NewDebug(operationID, "req", req)
+	sheet, err := db.DB.MysqlDB.GetSheetInfo(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "sheet info not exist", err.Error())
+		resp.ErrCode = constant.NotSheetInfo
+		resp.ErrMsg = "sheet info not exist"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	recordList, err := db.DB.MysqlDB.GetSubVersionRecordList(req.SheetID, sheet.Version, req.SubVersion)
+	if err != nil {
+		log.NewError(operationID, "record infos not exist", err.Error())
+		resp.ErrCode = constant.NotRecordInfo
+		resp.ErrMsg = "record infos not exist"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	var result []*api.AllRecordList
+
+	var temp api.AllRecordList
+	for i := 0; i < len(recordList); i++ {
+
+		if i == 0 || recordList[i].SubVersion == recordList[i-1].SubVersion {
+			temp.CommitTime = recordList[i].CommitTime
+			temp.SubVersion = recordList[i].SubVersion
+			temp.ModifierUserID = recordList[i].ModifierUserID
+			temp.ModifierName = recordList[i].ModifierName
+			temp.RecordList = append(temp.RecordList, recordList[i])
+		} else {
+			args := new(api.AllRecordList)
+			args.RecordList = temp.RecordList
+			args.CommitTime = temp.CommitTime
+			args.SubVersion = temp.SubVersion
+			args.ModifierUserID = temp.ModifierUserID
+			args.ModifierName = temp.ModifierName
+			result = append(result, args)
+			temp.CommitTime = recordList[i].CommitTime
+			temp.SubVersion = recordList[i].SubVersion
+			temp.ModifierUserID = recordList[i].ModifierUserID
+			temp.ModifierName = recordList[i].ModifierName
+			temp.RecordList = nil
+			temp.RecordList = append(temp.RecordList, recordList[i])
+		}
+	}
+
+	result = append(result, &temp)
 	resp.Data.Sheet = sheet
 	resp.Data.VersionUpLoadRecordList = result
 	log.NewDebug(operationID, "resp", resp)

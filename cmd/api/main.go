@@ -52,8 +52,7 @@ func main() {
 		fileRouterGroup.POST("/complete_sheet_version", excel.CompleteSheetVersion)
 		fileRouterGroup.POST("/revoke_sheet_version", excel.RevokeSheetVersion)
 		fileRouterGroup.POST("/get_record_sheet_version", excel.GetRecordSheetVersion)
-
-
+		fileRouterGroup.POST("/revoke_record_sheet_version", excel.RevokeRecordSheetVersion)
 
 	}
 
