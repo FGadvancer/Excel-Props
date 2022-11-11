@@ -264,7 +264,9 @@ func GetAllExcelFiles(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	resp.Data.SheetList = sheetList
+	if err := utils.CopyStructFields(&resp.Data.SheetList, sheetList); err != nil {
+		log.NewDebug(operationID, utils.GetSelfFuncName(), "CopyStructFields failed", err.Error())
+	}
 	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
@@ -303,8 +305,10 @@ func GetOneExcelDetail(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	resp.Data.Sheet = sheet
-	resp.Data.SheetMaterialList = sheetAndMaterialList
+	if err := utils.CopyStructFields(&resp.Data.SheetMaterialList, sheetAndMaterialList); err != nil {
+		log.NewDebug(operationID, utils.GetSelfFuncName(), "CopyStructFields failed", err.Error())
+	}
+	resp.Data.Sheet = *sheet
 	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
@@ -530,8 +534,10 @@ func GetRecordSheetVersion(c *gin.Context) {
 	}
 
 	result = append(result, &temp)
-	resp.Data.Sheet = sheet
-	resp.Data.VersionUpLoadRecordList = result
+	if err := utils.CopyStructFields(&resp.Data.VersionUpLoadRecordList, result); err != nil {
+		log.NewDebug(operationID, utils.GetSelfFuncName(), "CopyStructFields failed", err.Error())
+	}
+	resp.Data.Sheet = *sheet
 	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }

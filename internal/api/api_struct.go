@@ -35,7 +35,7 @@ type (
 	GetAllExcelFilesResp struct {
 		CommResp
 		Data struct {
-			SheetList []*db.Sheet `json:"sheetList"`
+			SheetList []db.Sheet `json:"sheetList"`
 		} `json:"data,omitempty"`
 	}
 	GetOneExcelDetailReq struct {
@@ -44,8 +44,8 @@ type (
 	GetOneExcelDetailResp struct {
 		CommResp
 		Data struct {
-			*db.Sheet
-			SheetMaterialList []*db.SheetAndMaterial `json:"sheetMaterialList"`
+			db.Sheet
+			SheetMaterialList []db.SheetAndMaterial `json:"sheetMaterialList"`
 		} `json:"data,omitempty"`
 	}
 	CompleteSheetVersionReq struct {
@@ -66,8 +66,8 @@ type (
 	GetRecordSheetVersionResp struct {
 		CommResp
 		Data struct {
-			*db.Sheet
-			VersionUpLoadRecordList []*AllRecordList `json:"versionUpLoadRecord"`
+			db.Sheet
+			VersionUpLoadRecordList []AllRecordList `json:"versionUpLoadRecord"`
 		} `json:"data,omitempty"`
 	}
 	RevokeRecordSheetVersionReq struct {
