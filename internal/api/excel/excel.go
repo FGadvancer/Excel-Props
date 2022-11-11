@@ -661,8 +661,8 @@ func AddSubSheetList(c *gin.Context) {
 	err = db.DB.MysqlDB.BatchInsertSheetSubList(list)
 	if err != nil {
 		log.NewError(operationID, "BatchInsertSheetSubList", err.Error())
-		resp.ErrCode = constant.NotRecordInfo
-		resp.ErrMsg = "record infos not exist"
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "BatchInsertSheetSubList err" + err.Error()
 		c.JSON(http.StatusOK, resp)
 		return
 	}
