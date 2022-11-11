@@ -29,3 +29,9 @@ func (s *SheetSub) GetSheetSubList() ([]string, error) {
 	var temp []string
 	return temp, utils.Wrap(DB.MysqlDB.db.Model(&SheetSub{}).Select("sub_sheet_id").Find(&temp).Error, "")
 }
+
+func (s *SheetSub) GetSheetSubInfo(subSheetID string) (*SheetSub, error) {
+	temp := SheetSub{}
+	err := DB.MysqlDB.db.Model(&temp).Where("sub_sheet_id = ? ", subSheetID).Take(&temp).Error
+	return &temp, utils.Wrap(err, "")
+}

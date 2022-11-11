@@ -654,9 +654,12 @@ func AddSubSheetList(c *gin.Context) {
 	log.NewDebug(operationID, "req", req)
 	var list []*db.SheetSub
 	for _, v := range req.SubSheetIDList {
-		temp := new(db.SheetSub)
-		temp.SubSheetID = v
-		list = append(list, temp)
+		_, newErr := db.DB.MysqlDB.GetSheetSubInfo(v)
+		if newErr != nil {
+			temp := new(db.SheetSub)
+			temp.SubSheetID = v
+			list = append(list, temp)
+		}
 	}
 	err = db.DB.MysqlDB.BatchInsertSheetSubList(list)
 	if err != nil {
