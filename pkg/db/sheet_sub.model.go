@@ -35,3 +35,8 @@ func (s *SheetSub) GetSheetSubInfo(subSheetID string) (*SheetSub, error) {
 	err := DB.MysqlDB.db.Model(&temp).Where("sub_sheet_id = ? ", subSheetID).Take(&temp).Error
 	return &temp, utils.Wrap(err, "")
 }
+
+func (s *SheetSub) BatchDeleteSheetSubList(subSheetIDList []string) error {
+	err := DB.MysqlDB.db.Where("sub_sheet_id  IN ? ", subSheetIDList).Delete(&SheetSub{}).Error
+	return utils.Wrap(err, "")
+}

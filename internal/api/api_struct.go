@@ -86,6 +86,7 @@ type (
 	}
 	AddSubSheetListReq struct {
 		SubSheetIDList []string `json:"subSheetIDList" binding:"required"`
+		OperationType  int32    `json:"operationType" binding:"required"`
 	}
 	AddSubSheetListResp struct {
 		CommResp

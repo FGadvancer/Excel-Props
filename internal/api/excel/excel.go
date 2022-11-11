@@ -624,7 +624,7 @@ func GetSubSheetList(c *gin.Context) {
 
 	list, err := db.DB.MysqlDB.GetSheetSubList()
 	if err != nil {
-		log.NewError(operationID, "record infos not exist", err.Error())
+		log.NewError(operationID, "GetSheetSubList not exist", err.Error())
 		resp.ErrCode = constant.NotRecordInfo
 		resp.ErrMsg = "record infos not exist"
 		c.JSON(http.StatusOK, resp)
@@ -634,7 +634,7 @@ func GetSubSheetList(c *gin.Context) {
 	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
-func AddSubSheetList(c *gin.Context) {
+func ModifySubSheetList(c *gin.Context) {
 	operationID := c.Request.Header.Get("operationID")
 	tokenString := c.Request.Header.Get("token")
 	req := api.AddSubSheetListReq{}
@@ -652,22 +652,35 @@ func AddSubSheetList(c *gin.Context) {
 		return
 	}
 	log.NewDebug(operationID, "req", req)
-	var list []*db.SheetSub
-	for _, v := range req.SubSheetIDList {
-		_, newErr := db.DB.MysqlDB.GetSheetSubInfo(v)
-		if newErr != nil {
-			temp := new(db.SheetSub)
-			temp.SubSheetID = v
-			list = append(list, temp)
+	switch req.OperationType {
+	case constant.AddSubSheet:
+		var list []*db.SheetSub
+		for _, v := range req.SubSheetIDList {
+			_, newErr := db.DB.MysqlDB.GetSheetSubInfo(v)
+			if newErr != nil {
+				temp := new(db.SheetSub)
+				temp.SubSheetID = v
+				list = append(list, temp)
+			}
 		}
-	}
-	err = db.DB.MysqlDB.BatchInsertSheetSubList(list)
-	if err != nil {
-		log.NewError(operationID, "BatchInsertSheetSubList", err.Error())
-		resp.ErrCode = constant.SheetDBError
-		resp.ErrMsg = "BatchInsertSheetSubList err" + err.Error()
-		c.JSON(http.StatusOK, resp)
-		return
+		err = db.DB.MysqlDB.BatchInsertSheetSubList(list)
+		if err != nil {
+			log.NewError(operationID, "BatchInsertSheetSubList", err.Error())
+			resp.ErrCode = constant.SheetDBError
+			resp.ErrMsg = "BatchInsertSheetSubList err" + err.Error()
+			c.JSON(http.StatusOK, resp)
+			return
+		}
+	case constant.DeleteSubSheet:
+		err = db.DB.MysqlDB.BatchDeleteSheetSubList(req.SubSheetIDList)
+		if err != nil {
+			log.NewError(operationID, "BatchDeleteSheetSubList", err.Error())
+			resp.ErrCode = constant.SheetDBError
+			resp.ErrMsg = "BatchDeleteSheetSubList err" + err.Error()
+			c.JSON(http.StatusOK, resp)
+			return
+		}
+
 	}
 	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
