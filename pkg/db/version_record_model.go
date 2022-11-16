@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type VersionUpLoadRecord struct {
+type VersionUploadRecord struct {
 	SheetID            string    `gorm:"column:sheet_id;primary_key;type:char(64)" json:"sheetID"`
 	Version            int32     `gorm:"column:version;primary_key;" json:"version"`
 	SubVersion         int32     `gorm:"column:sub_version;primary_key;" json:"subVersion"`
@@ -30,41 +30,41 @@ type VersionUpLoadRecord struct {
 	DB                 *gorm.DB  `gorm:"-" json:"-"`
 }
 
-func NewVersionUpLoadRecord(DB *gorm.DB) *VersionUpLoadRecord {
-	return &VersionUpLoadRecord{DB: DB}
+func NewVersionUpLoadRecord(DB *gorm.DB) *VersionUploadRecord {
+	return &VersionUploadRecord{DB: DB}
 }
 
-func (s *VersionUpLoadRecord) BatchInsertVersionUpLoadRecordList(recordList []*VersionUpLoadRecord) error {
+func (s *VersionUploadRecord) BatchInsertVersionUpLoadRecordList(recordList []*VersionUploadRecord) error {
 	if recordList == nil {
 		return nil
 	}
 	return utils.Wrap(DB.MysqlDB.db.Create(recordList).Error, "BatchInsertVersionUpLoadRecordList failed")
 }
-func (s *VersionUpLoadRecord) GetVersionRecordList(sheetID string, version int32) ([]*VersionUpLoadRecord, error) {
-	var temp []VersionUpLoadRecord
+func (s *VersionUploadRecord) GetVersionRecordList(sheetID string, version int32) ([]*VersionUploadRecord, error) {
+	var temp []VersionUploadRecord
 	err := DB.MysqlDB.db.Debug().Model(&temp).Where("sheet_id = ? And version = ?", sheetID, version).Order("commit_time DESC").Find(&temp).Error
 
-	var transfer []*VersionUpLoadRecord
+	var transfer []*VersionUploadRecord
 	for _, v := range temp {
 		v1 := v
 		transfer = append(transfer, &v1)
 	}
 	return transfer, utils.Wrap(err, "GetVersionRecordList failed")
 }
-func (s *VersionUpLoadRecord) GetSubVersionRecordList(sheetID string, version int32, subVersion int32) ([]*VersionUpLoadRecord, error) {
-	var temp []VersionUpLoadRecord
+func (s *VersionUploadRecord) GetSubVersionRecordList(sheetID string, version int32, subVersion int32) ([]*VersionUploadRecord, error) {
+	var temp []VersionUploadRecord
 	err := DB.MysqlDB.db.Debug().Model(&temp).Where("sheet_id = ? And version = ? And sub_version=?", sheetID, version, subVersion).Find(&temp).Error
 
-	var transfer []*VersionUpLoadRecord
+	var transfer []*VersionUploadRecord
 	for _, v := range temp {
 		v1 := v
 		transfer = append(transfer, &v1)
 	}
 	return transfer, utils.Wrap(err, "GetSubVersionRecordList failed")
 }
-func (s *VersionUpLoadRecord) DeleteVersionRecordListBySheetIDAndVersion(sheetID string, version int32) error {
-	return DB.MysqlDB.db.Where("sheet_id=? and version=? ", sheetID, version).Delete(&VersionUpLoadRecord{}).Error
+func (s *VersionUploadRecord) DeleteVersionRecordListBySheetIDAndVersion(sheetID string, version int32) error {
+	return DB.MysqlDB.db.Where("sheet_id=? and version=? ", sheetID, version).Delete(&VersionUploadRecord{}).Error
 }
-func (s *VersionUpLoadRecord) DeleteSubVersionRecordListBySheetIDAndVersion(sheetID string, version int32, subVersion int32) error {
-	return DB.MysqlDB.db.Where("sheet_id=? and version=? and sub_version=?", sheetID, version, subVersion).Delete(&VersionUpLoadRecord{}).Error
+func (s *VersionUploadRecord) DeleteSubVersionRecordListBySheetIDAndVersion(sheetID string, version int32, subVersion int32) error {
+	return DB.MysqlDB.db.Where("sheet_id=? and version=? and sub_version=?", sheetID, version, subVersion).Delete(&VersionUploadRecord{}).Error
 }

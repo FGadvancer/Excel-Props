@@ -47,7 +47,7 @@ func FileUpload(c *gin.Context) {
 		return
 	}
 	var tempMaterialList []*db.SheetAndMaterial
-	var recordList []*db.VersionUpLoadRecord
+	var recordList []*db.VersionUploadRecord
 	for _, v := range req.SheetList {
 		temp, err := db.DB.MysqlDB.GetMaterialInfo(v.MaterialKey)
 		if err != nil {
@@ -57,7 +57,7 @@ func FileUpload(c *gin.Context) {
 			c.JSON(http.StatusOK, resp)
 			return
 		}
-		record := new(db.VersionUpLoadRecord)
+		record := new(db.VersionUploadRecord)
 		record.SheetID = req.SheetID
 		record.MaterialKey = v.MaterialKey
 		record.MaterialStandard = v.MaterialStandard

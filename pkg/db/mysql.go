@@ -20,7 +20,7 @@ type mysqlDB struct {
 	*Register
 	*Sheet
 	*SheetAndMaterial
-	*VersionUpLoadRecord
+	*VersionUploadRecord
 	*SheetSub
 }
 
@@ -94,7 +94,7 @@ func initMysqlDB() {
 
 	fmt.Println("open mysql ok ", dsn)
 	db.AutoMigrate(
-		&Register{}, &Sheet{}, &SheetAndMaterial{}, &TemplateSheet{}, &TemplateMaterial{}, &VersionUpLoadRecord{})
+		&Register{}, &Sheet{}, &SheetAndMaterial{}, &TemplateSheet{}, &TemplateMaterial{}, &VersionUploadRecord{})
 	db.Set("gorm:table_options", "CHARSET=utf8")
 	db.Set("gorm:table_options", "collation=utf8_unicode_ci")
 
@@ -121,9 +121,9 @@ func initMysqlDB() {
 		fmt.Println("CreateTable TemplateMaterial")
 		db.Migrator().CreateTable(&TemplateMaterial{})
 	}
-	if !db.Migrator().HasTable(&VersionUpLoadRecord{}) {
-		fmt.Println("CreateTable VersionUpLoadRecord")
-		db.Migrator().CreateTable(&VersionUpLoadRecord{})
+	if !db.Migrator().HasTable(&VersionUploadRecord{}) {
+		fmt.Println("CreateTable VersionUploadRecord")
+		db.Migrator().CreateTable(&VersionUploadRecord{})
 	}
 	if !db.Migrator().HasTable(&SheetSub{}) {
 		fmt.Println("CreateTable SheetSub")
@@ -135,7 +135,7 @@ func initMysqlDB() {
 	DB.MysqlDB.TemplateMaterial = NewTemplate2(db)
 	DB.MysqlDB.Sheet = NewSheet(db)
 	DB.MysqlDB.SheetAndMaterial = NewSheetAndMaterial(db)
-	DB.MysqlDB.VersionUpLoadRecord = NewVersionUpLoadRecord(db)
+	DB.MysqlDB.VersionUploadRecord = NewVersionUpLoadRecord(db)
 	DB.MysqlDB.SheetSub = NewSheetSub(db)
 	for i, v := range config.Config.Manager.AppManagerUid {
 		user := Register{}

@@ -132,5 +132,5 @@ type AllRecordList struct {
 	CommitTime     time.Time                 ` json:"commitTime"`
 	ModifierUserID string                    `json:"modifierUserID"`
 	ModifierName   string                    ` json:"modifierName"`
-	RecordList     []*db.VersionUpLoadRecord `json:"recordList"`
+	RecordList     []*db.VersionUploadRecord `json:"recordList"`
 }
