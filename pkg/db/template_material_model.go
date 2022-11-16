@@ -1,8 +1,8 @@
 package db
 
 import (
+	"Excel-Props/pkg/log"
 	"Excel-Props/pkg/utils"
-	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -32,9 +32,9 @@ func (t *TemplateMaterial) ImportDataToTemplateMaterial(data []*TemplateMaterial
 	for _, v := range data {
 		t := TemplateMaterial{}
 		if e := DB.MysqlDB.db.Model(&TemplateMaterial{}).Where("material_key = ? And material_standard = ?", v.MaterialKey, v.MaterialStandard).Take(&t).Error; e != nil {
-			fmt.Println("new Material find : ", v, e.Error())
+			log.Error("new Material find : ", v, e.Error())
 			if err := DB.MysqlDB.db.Model(v).Create(v).Error; err != nil {
-				fmt.Println("import sheet  db error  : ", v, e.Error())
+				log.Error("import sheet  db error  : ", v, e.Error())
 			}
 		}
 	}
