@@ -144,6 +144,9 @@ func initMysqlDB() {
 			user.Account = config.Config.Manager.AppManagerUid[i]
 			user.Password = utils.Md5(config.Config.Manager.Secrets[i])
 			user.UserName = config.Config.Manager.AppManagerUid[i]
+			if v == "admin1" {
+				user.ManagerLevel = 1
+			}
 			user.CreateTime = time.Now()
 			if err := DB.MysqlDB.db.Model(&user).Create(&user).Error; err != nil {
 				fmt.Println("init db error  : ", v, e.Error())

@@ -21,6 +21,7 @@ type (
 		CommResp
 		Data struct {
 			UserName string `json:"userName,omitempty"`
+			ManagerLevel int `json:"managerLevel"`
 		} `json:"data,omitempty"`
 	}
 	ExcelFileUploadReq struct {

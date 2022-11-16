@@ -74,3 +74,8 @@ func (s *SheetAndMaterial) GetSheetAndMaterialInfoBySheetID(sheetID string) ([]*
 func (s *SheetAndMaterial)DeleteSheetAndMaterialInfoBySheetIDAndVersion(sheetID string,version int32) error {
 	return DB.MysqlDB.db.Where("sheet_id=? and version=? ", sheetID, version).Delete(&SheetAndMaterial{}).Error
 }
+
+func (s *SheetAndMaterial)DecrMaterialQuantity(sheetID string,version int32,materialKey string,materialStandard string,quantity int32) error {
+	c := SheetAndMaterial{SheetID: sheetID,Version: version,MaterialKey: materialKey,MaterialStandard: materialStandard}
+	return DB.MysqlDB.db.Model(&c).Update("quantity", gorm.Expr("quantity-?", quantity)).Error
+}

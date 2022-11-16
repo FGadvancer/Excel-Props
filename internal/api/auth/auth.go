@@ -65,5 +65,6 @@ func ParseToken(c *gin.Context) {
 		return
 	}
 	resp.Data.UserName = user.UserName
+	resp.Data.ManagerLevel = user.ManagerLevel
 	c.JSON(http.StatusOK, resp)
 }

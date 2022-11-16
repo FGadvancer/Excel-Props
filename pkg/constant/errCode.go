@@ -15,6 +15,7 @@ const (
 	HasCompleteVersion      = 109
 	SheetVersionZero        = 110
 	NotRecordInfo           = 111
+	NotRootManger           = 112
 )
 
 type ErrInfo struct {

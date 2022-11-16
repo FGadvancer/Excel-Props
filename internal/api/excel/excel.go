@@ -575,35 +575,41 @@ func RevokeRecordSheetVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	var result []*api.AllRecordList
-
-	var temp api.AllRecordList
-	for i := 0; i < len(recordList); i++ {
-
-		if i == 0 || recordList[i].SubVersion == recordList[i-1].SubVersion {
-			temp.CommitTime = recordList[i].CommitTime
-			temp.SubVersion = recordList[i].SubVersion
-			temp.ModifierUserID = recordList[i].ModifierUserID
-			temp.ModifierName = recordList[i].ModifierName
-			temp.RecordList = append(temp.RecordList, recordList[i])
-		} else {
-			args := new(api.AllRecordList)
-			args.RecordList = temp.RecordList
-			args.CommitTime = temp.CommitTime
-			args.SubVersion = temp.SubVersion
-			args.ModifierUserID = temp.ModifierUserID
-			args.ModifierName = temp.ModifierName
-			result = append(result, args)
-			temp.CommitTime = recordList[i].CommitTime
-			temp.SubVersion = recordList[i].SubVersion
-			temp.ModifierUserID = recordList[i].ModifierUserID
-			temp.ModifierName = recordList[i].ModifierName
-			temp.RecordList = nil
-			temp.RecordList = append(temp.RecordList, recordList[i])
+	//抢占分布式锁
+	err = db.DB.Redis.LockSheetID(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "this sheetID locked by others ", err.Error(), req)
+		resp.ErrCode = constant.SheetBusy
+		resp.ErrMsg = "this sheetID locked by others"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	tx := db.DB.MysqlDB.Db().Begin()
+	for _, v := range recordList {
+		err = 	db.DB.MysqlDB.DecrMaterialQuantity(v.SheetID,v.Version,v.MaterialKey,v.MaterialStandard,v.Quantity)
+		if err != nil {
+			log.NewError(operationID, "DecrMaterialQuantity err:", err.Error(), req)
+			resp.ErrCode = constant.SheetDBError
+			resp.ErrMsg = "DecrMaterialQuantity err"+err.Error()
+			c.JSON(http.StatusOK, resp)
+			return
 		}
 	}
-
-	result = append(result, &temp)
+	err = db.DB.MysqlDB.DeleteSubVersionRecordListBySheetIDAndVersion(req.SheetID,sheet.Version, req.SubVersion)
+	if err != nil {
+		tx.Rollback()
+		log.NewError(operationID, "DeleteSubVersionRecordListBySheetIDAndVersion db operation error", err.Error(), req)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "DeleteSubVersionRecordListBySheetIDAndVersion err"+err.Error()
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	tx.Commit()
+	//解开分布式锁
+	err = db.DB.Redis.UnLockSheetID(req.SheetID)
+	if err != nil {
+		log.NewError(operationID, "unLockSheetID err:", err.Error(), req)
+	}
 	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)
 }
@@ -730,6 +736,20 @@ func UpdateTemplateSheetList(c *gin.Context) {
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
 		return
 	}
+	user, err := db.DB.MysqlDB.GetAccountInfo(userID)
+	if err != nil {
+		log.NewError(operationID, "not user info", err.Error(), req)
+		resp.ErrCode = constant.NotUserInfo
+		resp.ErrMsg = "not user info"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if user.ManagerLevel != constant.RootManger {
+		resp.ErrCode = constant.NotRootManger
+		resp.ErrMsg = "not root manger,can not operate"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
 	log.NewDebug(operationID, "req", req)
 	err = db.DB.MysqlDB.DeleteAllTemplateSheet()
 	if err != nil {
@@ -794,6 +814,20 @@ func UpdateTemplateMaterialList(c *gin.Context) {
 		return
 	}
 	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
+		return
+	}
+	user, err := db.DB.MysqlDB.GetAccountInfo(userID)
+	if err != nil {
+		log.NewError(operationID, "not user info", err.Error(), req)
+		resp.ErrCode = constant.NotUserInfo
+		resp.ErrMsg = "not user info"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if user.ManagerLevel != constant.RootManger {
+		resp.ErrCode = constant.NotRootManger
+		resp.ErrMsg = "not root manger,can not operate"
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 	log.NewDebug(operationID, "req", req)

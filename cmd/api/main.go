@@ -59,9 +59,6 @@ func main() {
 		fileRouterGroup.POST("/update_template_sheet_list", excel.UpdateTemplateSheetList)
 		fileRouterGroup.POST("/get_template_material_list", excel.GetTemplateMaterialList)
 		fileRouterGroup.POST("/update_template_material_list", excel.UpdateTemplateMaterialList)
-
-
-
 	}
 
 	defaultPorts := config.Config.Api.GinPort
