@@ -719,7 +719,6 @@ func UpdateTemplateSheetList(c *gin.Context) {
 	tokenString := c.Request.Header.Get("token")
 	req:=api.UpdateTemplateSheetListReq{}
 	resp := api.UpdateTemplateSheetListResp{}
-	log.NewDebug(operationID, "req", tokenString)
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
 		log.NewError(operationID, "token parse failed", err.Error())
@@ -728,6 +727,10 @@ func UpdateTemplateSheetList(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
+		return
+	}
+	log.NewDebug(operationID, "req", req)
 	err = db.DB.MysqlDB.DeleteAllTemplateSheet()
 	if err != nil {
 		log.NewError(operationID, "DeleteAllTemplateSheet db operation error", err.Error(), userID)
@@ -790,6 +793,10 @@ func UpdateTemplateMaterialList(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+	if api.IsInterruptBindJson(&req, &resp.CommResp, c) {
+		return
+	}
+	log.NewDebug(operationID, "req", req)
 	err = db.DB.MysqlDB.DeleteAllTemplateMaterial()
 	if err != nil {
 		log.NewError(operationID, "DeleteAllTemplateMaterial db operation error", err.Error(), userID)
