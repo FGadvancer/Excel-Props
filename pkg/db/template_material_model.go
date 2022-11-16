@@ -32,7 +32,7 @@ func (t *TemplateMaterial) ImportDataToTemplateMaterial(data []*TemplateMaterial
 	for _, v := range data {
 		t := TemplateMaterial{}
 		if e := DB.MysqlDB.db.Model(&TemplateMaterial{}).Where("material_key = ? And material_standard = ?", v.MaterialKey, v.MaterialStandard).Take(&t).Error; e != nil {
-			log.Error("new Material find : ", v, e.Error())
+			log.Debug("new Material find : ", v, e.Error())
 			if err := DB.MysqlDB.db.Model(v).Create(v).Error; err != nil {
 				log.Error("import sheet  db error  : ", v, e.Error())
 			}

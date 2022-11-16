@@ -24,7 +24,7 @@ func (t *TemplateSheet) ImportDataToTemplateSheet(data []*TemplateSheet) error {
 	for _, v := range data {
 		t := TemplateSheet{}
 		if e := DB.MysqlDB.db.Model(&TemplateSheet{}).Where("sheet_id = ? ", v.SheetID).Take(&t).Error; e != nil {
-			log.Error("new sheetID find : ", v, e.Error())
+			log.Debug("new sheetID find : ", v, e.Error())
 			if err := DB.MysqlDB.db.Model(v).Create(v).Error; err != nil {
 				log.Error("import sheet  db error  : ", v, e.Error())
 			}
