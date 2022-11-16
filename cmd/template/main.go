@@ -22,10 +22,10 @@ func main() {
 	}
 	//fmt.Println(len())
 	log.Debug("main", "get source 1 file info is:", f.Sheets[0].MaxRow, f.Sheets[0].MaxCol)
-	var list []*db.Template1
+	var list []*db.TemplateSheet
 	for i := 0; i < f.Sheets[0].MaxRow; i++ {
 		if i > 2 {
-			temp := new(db.Template1)
+			temp := new(db.TemplateSheet)
 			if f.Sheets[0].Cell(i, 9).Value != "" {
 				temp.SheetID = f.Sheets[0].Cell(i, 9).Value
 				temp.MachineKind = f.Sheets[0].Cell(i, 2).Value
@@ -36,7 +36,7 @@ func main() {
 		}
 
 	}
-	err = db.DB.MysqlDB.ImportDataToTemplate1(list)
+	err = db.DB.MysqlDB.ImportDataToTemplateSheet(list)
 	if err != nil {
 		log.Error("main", "source 1 excel import file err:", err.Error())
 		panic(err)
@@ -49,13 +49,13 @@ func main() {
 	s := f.Sheet["塑胶模-新BOM"]
 	//page := 0
 	log.Debug("main", "get source 2 file info is:", s.MaxRow, s.MaxCol)
-	var list2 []*db.Template2
+	var list2 []*db.TemplateMaterial
 	fmt.Println("get source 2 file info", s.MaxRow, s.MaxCol)
 	for i := 0; i < s.MaxRow; i++ {
 
 		if i > 0 {
 			if s.Cell(i, 0).Value != "" {
-				temp := new(db.Template2)
+				temp := new(db.TemplateMaterial)
 				temp.MaterialKey = s.Cell(i, 0).Value
 
 				temp.MaterialCategory = s.Cell(i, 1).Value
@@ -75,7 +75,7 @@ func main() {
 		}
 
 	}
-	err = db.DB.MysqlDB.ImportDataToTemplate2(list2)
+	err = db.DB.MysqlDB.ImportDataToTemplateMaterial(list2)
 	if err != nil {
 		log.Error("main", "source 2 excel import file err:", err.Error())
 		panic(err)

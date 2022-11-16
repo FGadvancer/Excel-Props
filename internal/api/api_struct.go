@@ -91,6 +91,30 @@ type (
 	AddSubSheetListResp struct {
 		CommResp
 	}
+	GetTemplateSheetListResp struct {
+		CommResp
+		Data struct {
+			TemplateSheetList []db.TemplateSheet `json:"templateSheetList"`
+		} `json:"data,omitempty"`
+	}
+	GetTemplateMaterialListResp struct {
+		CommResp
+		Data struct {
+			TemplateMaterialList []db.TemplateMaterial `json:"templateMaterialList"`
+		} `json:"data,omitempty"`
+	}
+	UpdateTemplateSheetListReq struct {
+		TemplateSheetList []*db.TemplateSheet `json:"templateSheetList"`
+	}
+	UpdateTemplateSheetListResp struct {
+		CommResp
+	}
+	UpdateTemplateMaterialListReq struct {
+		TemplateMaterialList []*db.TemplateMaterial `json:"templateMaterialList"`
+	}
+	UpdateTemplateMaterialListResp struct {
+		CommResp
+	}
 )
 type CommResp struct {
 	ErrCode int32  `json:"errCode"`

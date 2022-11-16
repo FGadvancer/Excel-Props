@@ -38,7 +38,7 @@ func FileUpload(c *gin.Context) {
 		return
 	}
 	log.NewDebug(operationID, "input args is:", req)
-	temp, err := db.DB.MysqlDB.GetTemplateInfo(req.SheetID)
+	temp, err := db.DB.MysqlDB.GetTemplateSheetInfo(req.SheetID)
 	if err != nil {
 		log.NewError(operationID, "not template info", err.Error(), req)
 		resp.ErrCode = constant.NotTemplateInfo
@@ -681,6 +681,130 @@ func ModifySubSheetList(c *gin.Context) {
 			return
 		}
 
+	}
+	log.NewDebug(operationID, "resp", resp)
+	c.JSON(http.StatusOK, resp)
+}
+
+func GetTemplateSheetList(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+	resp := api.GetTemplateSheetListResp{}
+	log.NewDebug(operationID, "req", tokenString)
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error())
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	templateSheetList, err := db.DB.MysqlDB.GetAllSheetTemplates()
+	if err != nil {
+		log.NewError(operationID, "GetAllSheetTemplates db operation error", err.Error(), userID)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "GetAllSheetTemplates err"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if err := utils.CopyStructFields(&resp.Data.TemplateSheetList, templateSheetList); err != nil {
+		log.NewDebug(operationID, utils.GetSelfFuncName(), "CopyStructFields failed", err.Error())
+	}
+	log.NewDebug(operationID, "resp", resp)
+	c.JSON(http.StatusOK, resp)
+}
+
+func UpdateTemplateSheetList(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+	req:=api.UpdateTemplateSheetListReq{}
+	resp := api.UpdateTemplateSheetListResp{}
+	log.NewDebug(operationID, "req", tokenString)
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error())
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	err = db.DB.MysqlDB.DeleteAllTemplateSheet()
+	if err != nil {
+		log.NewError(operationID, "DeleteAllTemplateSheet db operation error", err.Error(), userID)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "DeleteAllTemplateSheet err"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	err = db.DB.MysqlDB.ImportDataToTemplateSheet(req.TemplateSheetList)
+	if err != nil {
+		log.NewError(operationID, "ImportDataToTemplateSheet db operation error", err.Error(), userID)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "ImportDataToTemplateSheet err"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	log.NewDebug(operationID, "resp", resp)
+	c.JSON(http.StatusOK, resp)
+}
+
+func GetTemplateMaterialList(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+	resp := api.GetTemplateMaterialListResp{}
+	log.NewDebug(operationID, "req", tokenString)
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error())
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	templateMaterialList, err := db.DB.MysqlDB.GetAllMaterialTemplates()
+	if err != nil {
+		log.NewError(operationID, "GetAllMaterialTemplates db operation error", err.Error(), userID)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "GetAllMaterialTemplates err"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if err := utils.CopyStructFields(&resp.Data.TemplateMaterialList, templateMaterialList); err != nil {
+		log.NewDebug(operationID, utils.GetSelfFuncName(), "CopyStructFields failed", err.Error())
+	}
+	log.NewDebug(operationID, "resp", resp)
+	c.JSON(http.StatusOK, resp)
+}
+
+func UpdateTemplateMaterialList(c *gin.Context) {
+	operationID := c.Request.Header.Get("operationID")
+	tokenString := c.Request.Header.Get("token")
+	req:=api.UpdateTemplateMaterialListReq{}
+	resp := api.UpdateTemplateMaterialListResp{}
+	log.NewDebug(operationID, "req", tokenString)
+	userID, err := token.GetUserIDFromToken(tokenString)
+	if err != nil {
+		log.NewError(operationID, "token parse failed", err.Error())
+		resp.ErrCode = constant.ParseTokenFailed
+		resp.ErrMsg = "token parse failed"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	err = db.DB.MysqlDB.DeleteAllTemplateMaterial()
+	if err != nil {
+		log.NewError(operationID, "DeleteAllTemplateMaterial db operation error", err.Error(), userID)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "DeleteAllTemplateMaterial err"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	err = db.DB.MysqlDB.ImportDataToTemplateMaterial(req.TemplateMaterialList)
+	if err != nil {
+		log.NewError(operationID, "ImportDataToTemplateMaterial db operation error", err.Error(), userID)
+		resp.ErrCode = constant.SheetDBError
+		resp.ErrMsg = "ImportDataToTemplateMaterial err"
+		c.JSON(http.StatusOK, resp)
+		return
 	}
 	log.NewDebug(operationID, "resp", resp)
 	c.JSON(http.StatusOK, resp)

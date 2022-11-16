@@ -15,8 +15,8 @@ import (
 type mysqlDB struct {
 	sync.RWMutex
 	db *gorm.DB
-	*Template1
-	*Template2
+	*TemplateSheet
+	*TemplateMaterial
 	*Register
 	*Sheet
 	*SheetAndMaterial
@@ -94,7 +94,7 @@ func initMysqlDB() {
 
 	fmt.Println("open mysql ok ", dsn)
 	db.AutoMigrate(
-		&Register{}, &Sheet{}, &SheetAndMaterial{}, &Template1{}, &Template2{}, &VersionUpLoadRecord{})
+		&Register{}, &Sheet{}, &SheetAndMaterial{}, &TemplateSheet{}, &TemplateMaterial{}, &VersionUpLoadRecord{})
 	db.Set("gorm:table_options", "CHARSET=utf8")
 	db.Set("gorm:table_options", "collation=utf8_unicode_ci")
 
@@ -113,13 +113,13 @@ func initMysqlDB() {
 			fmt.Println("CreateTable SheetAndMaterial err:", err.Error())
 		}
 	}
-	if !db.Migrator().HasTable(&Template1{}) {
-		fmt.Println("CreateTable Template1")
-		db.Migrator().CreateTable(&Template1{})
+	if !db.Migrator().HasTable(&TemplateSheet{}) {
+		fmt.Println("CreateTable TemplateSheet")
+		db.Migrator().CreateTable(&TemplateSheet{})
 	}
-	if !db.Migrator().HasTable(&Template2{}) {
-		fmt.Println("CreateTable Template2")
-		db.Migrator().CreateTable(&Template2{})
+	if !db.Migrator().HasTable(&TemplateMaterial{}) {
+		fmt.Println("CreateTable TemplateMaterial")
+		db.Migrator().CreateTable(&TemplateMaterial{})
 	}
 	if !db.Migrator().HasTable(&VersionUpLoadRecord{}) {
 		fmt.Println("CreateTable VersionUpLoadRecord")
@@ -131,8 +131,8 @@ func initMysqlDB() {
 	}
 	DB.MysqlDB.db = db
 	DB.MysqlDB.Register = NewRegister(db)
-	DB.MysqlDB.Template1 = NewTemplate1(db)
-	DB.MysqlDB.Template2 = NewTemplate2(db)
+	DB.MysqlDB.TemplateSheet = NewTemplate1(db)
+	DB.MysqlDB.TemplateMaterial = NewTemplate2(db)
 	DB.MysqlDB.Sheet = NewSheet(db)
 	DB.MysqlDB.SheetAndMaterial = NewSheetAndMaterial(db)
 	DB.MysqlDB.VersionUpLoadRecord = NewVersionUpLoadRecord(db)

@@ -7,7 +7,7 @@ import (
 )
 
 //料件模板表
-type Template2 struct {
+type TemplateMaterial struct {
 	MaterialKey        string   `gorm:"column:material_key;primary_key;type:char(64)" json:"materialKey"`
 	MaterialStandard   string   `gorm:"column:material_standard;type:varchar(64)" json:"materialStandard"`
 	MaterialCategory   string   `gorm:"column:material_category;type:varchar(64)" json:"materialCategory"`
@@ -24,14 +24,14 @@ type Template2 struct {
 	DB                 *gorm.DB `gorm:"-" json:"-"`
 }
 
-func NewTemplate2(DB *gorm.DB) *Template2 {
-	return &Template2{DB: DB}
+func NewTemplate2(DB *gorm.DB) *TemplateMaterial {
+	return &TemplateMaterial{DB: DB}
 }
 
-func (t *Template2) ImportDataToTemplate2(data []*Template2) error {
+func (t *TemplateMaterial) ImportDataToTemplateMaterial(data []*TemplateMaterial) error {
 	for _, v := range data {
-		t := Template2{}
-		if e := DB.MysqlDB.db.Model(&Template2{}).Where("material_key = ? And material_standard = ?", v.MaterialKey, v.MaterialStandard).Take(&t).Error; e != nil {
+		t := TemplateMaterial{}
+		if e := DB.MysqlDB.db.Model(&TemplateMaterial{}).Where("material_key = ? And material_standard = ?", v.MaterialKey, v.MaterialStandard).Take(&t).Error; e != nil {
 			fmt.Println("new Material find : ", v, e.Error())
 			if err := DB.MysqlDB.db.Model(v).Create(v).Error; err != nil {
 				fmt.Println("import sheet  db error  : ", v, e.Error())
@@ -40,8 +40,23 @@ func (t *Template2) ImportDataToTemplate2(data []*Template2) error {
 	}
 	return nil
 }
-func (t *Template2) GetMaterialInfo(materialKey string) (*Template2, error) {
-	temp := Template2{}
+func (t *TemplateMaterial) GetMaterialInfo(materialKey string) (*TemplateMaterial, error) {
+	temp := TemplateMaterial{}
 	err := DB.MysqlDB.db.Model(&temp).Where("material_key = ?", materialKey).Take(&temp).Error
 	return &temp, utils.Wrap(err, "")
+}
+func (t *TemplateMaterial) DeleteAllTemplateMaterial()  error {
+	err := DB.MysqlDB.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&TemplateMaterial{}).Error
+	return  utils.Wrap(err, "")
+}
+func (t *TemplateMaterial) GetAllMaterialTemplates() ([]*TemplateMaterial, error) {
+	var templateList []TemplateMaterial
+	err := utils.Wrap(DB.MysqlDB.db.Find(&templateList).Error,
+		"GetAllMaterialTemplates failed")
+	var transfer []*TemplateMaterial
+	for _, v := range templateList {
+		v1 := v
+		transfer = append(transfer, &v1)
+	}
+	return transfer, err
 }
