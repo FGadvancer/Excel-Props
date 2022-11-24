@@ -8,7 +8,7 @@ import (
 
 //料件模板表
 type TemplateMaterial struct {
-	Index              int32    `gorm:"column:index" json:"index"`
+	IndexNumber        int32    `gorm:"column:index_number" json:"indexNumber"`
 	MaterialKey        string   `gorm:"column:material_key;primary_key;type:char(64)" json:"materialKey"`
 	MaterialStandard   string   `gorm:"column:material_standard;type:varchar(64)" json:"materialStandard"`
 	MaterialCategory   string   `gorm:"column:material_category;type:varchar(64)" json:"materialCategory"`
@@ -52,7 +52,7 @@ func (t *TemplateMaterial) DeleteAllTemplateMaterial() error {
 }
 func (t *TemplateMaterial) GetAllMaterialTemplates() ([]*TemplateMaterial, error) {
 	var templateList []TemplateMaterial
-	err := utils.Wrap(DB.MysqlDB.db.Debug().Order("index asc").Find(&templateList).Error,
+	err := utils.Wrap(DB.MysqlDB.db.Debug().Order("index_number asc").Find(&templateList).Error,
 		"GetAllMaterialTemplates failed")
 	var transfer []*TemplateMaterial
 	for _, v := range templateList {

@@ -13,6 +13,7 @@ type SheetAndMaterial struct {
 	MaterialKey       string `gorm:"column:material_key;primary_key;type:char(64)" json:"materialKey"`
 	MaterialStandard  string `gorm:"column:material_standard;primary_key;type:char(64)" json:"materialStandard"`
 	Version           int32  `gorm:"column:version;primary_key;" json:"version"`
+	IndexNumber       int32  `gorm:"column:index_number" json:"indexNumber"`
 	MaterialCategory  string `gorm:"column:material_category;type:varchar(64)" json:"materialCategory"`
 	MaterialName      string `gorm:"column:material_name;type:varchar(64)" json:"materialName"`
 	MaterialSubstance string `gorm:"column:material_substance;type:varchar(64)" json:"materialSubstance"`

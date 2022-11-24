@@ -94,6 +94,7 @@ func FileUpload(c *gin.Context) {
 		material.RemarkTwo = temp.RemarkTwo
 		material.IsPurchase = temp.IsPurchase
 		material.StandardCraft = temp.StandardCraft
+		material.IndexNumber = temp.IndexNumber
 		material.LastModifyTime = time.Now()
 		material.LastModifierUserID = userID
 		material.LastModifyCount = v.Quantity
@@ -586,21 +587,21 @@ func RevokeRecordSheetVersion(c *gin.Context) {
 	}
 	tx := db.DB.MysqlDB.Db().Begin()
 	for _, v := range recordList {
-		err = 	db.DB.MysqlDB.DecrMaterialQuantity(v.SheetID,v.Version,v.MaterialKey,v.MaterialStandard,v.Quantity)
+		err = db.DB.MysqlDB.DecrMaterialQuantity(v.SheetID, v.Version, v.MaterialKey, v.MaterialStandard, v.Quantity)
 		if err != nil {
 			log.NewError(operationID, "DecrMaterialQuantity err:", err.Error(), req)
 			resp.ErrCode = constant.SheetDBError
-			resp.ErrMsg = "DecrMaterialQuantity err"+err.Error()
+			resp.ErrMsg = "DecrMaterialQuantity err" + err.Error()
 			c.JSON(http.StatusOK, resp)
 			return
 		}
 	}
-	err = db.DB.MysqlDB.DeleteSubVersionRecordListBySheetIDAndVersion(req.SheetID,sheet.Version, req.SubVersion)
+	err = db.DB.MysqlDB.DeleteSubVersionRecordListBySheetIDAndVersion(req.SheetID, sheet.Version, req.SubVersion)
 	if err != nil {
 		tx.Rollback()
 		log.NewError(operationID, "DeleteSubVersionRecordListBySheetIDAndVersion db operation error", err.Error(), req)
 		resp.ErrCode = constant.SheetDBError
-		resp.ErrMsg = "DeleteSubVersionRecordListBySheetIDAndVersion err"+err.Error()
+		resp.ErrMsg = "DeleteSubVersionRecordListBySheetIDAndVersion err" + err.Error()
 		c.JSON(http.StatusOK, resp)
 		return
 	}
@@ -723,7 +724,7 @@ func GetTemplateSheetList(c *gin.Context) {
 func UpdateTemplateSheetList(c *gin.Context) {
 	operationID := c.Request.Header.Get("operationID")
 	tokenString := c.Request.Header.Get("token")
-	req:=api.UpdateTemplateSheetListReq{}
+	req := api.UpdateTemplateSheetListReq{}
 	resp := api.UpdateTemplateSheetListResp{}
 	userID, err := token.GetUserIDFromToken(tokenString)
 	if err != nil {
@@ -802,7 +803,7 @@ func GetTemplateMaterialList(c *gin.Context) {
 func UpdateTemplateMaterialList(c *gin.Context) {
 	operationID := c.Request.Header.Get("operationID")
 	tokenString := c.Request.Header.Get("token")
-	req:=api.UpdateTemplateMaterialListReq{}
+	req := api.UpdateTemplateMaterialListReq{}
 	resp := api.UpdateTemplateMaterialListResp{}
 	log.NewDebug(operationID, "req", tokenString)
 	userID, err := token.GetUserIDFromToken(tokenString)
