@@ -37,9 +37,9 @@ func NewSheetAndMaterial(DB *gorm.DB) *SheetAndMaterial {
 	return &SheetAndMaterial{DB: DB}
 }
 
-func (s *SheetAndMaterial) GetSheetAndMaterialInfo(sheetID string, materialKey string, materialStandard string,version int32) (*SheetAndMaterial, error) {
+func (s *SheetAndMaterial) GetSheetAndMaterialInfo(sheetID string, materialKey string, materialStandard string, version int32) (*SheetAndMaterial, error) {
 	temp := SheetAndMaterial{}
-	err := DB.MysqlDB.db.Model(&temp).Where("sheet_id = ? And material_key = ? And material_standard = ? And version = ?", sheetID, materialKey, materialStandard,version).Take(&temp).Error
+	err := DB.MysqlDB.db.Model(&temp).Where("sheet_id = ? And material_key = ? And material_standard = ? And version = ?", sheetID, materialKey, materialStandard, version).Take(&temp).Error
 	return &temp, utils.Wrap(err, "")
 }
 func (s *SheetAndMaterial) BatchInsertSheetAndMaterialList(materialList []*SheetAndMaterial) error {
@@ -62,7 +62,7 @@ func (s *SheetAndMaterial) UpdateSheetAndMaterial(material *SheetAndMaterial) er
 
 func (s *SheetAndMaterial) GetSheetAndMaterialInfoBySheetID(sheetID string) ([]*SheetAndMaterial, error) {
 	var temp []SheetAndMaterial
-	err := DB.MysqlDB.db.Debug().Model(&temp).Where("sheet_id = ?", sheetID).Order("last_modify_time DESC").Find(&temp).Error
+	err := DB.MysqlDB.db.Debug().Model(&temp).Where("sheet_id = ?", sheetID).Find(&temp).Error
 
 	var transfer []*SheetAndMaterial
 	for _, v := range temp {
@@ -71,11 +71,11 @@ func (s *SheetAndMaterial) GetSheetAndMaterialInfoBySheetID(sheetID string) ([]*
 	}
 	return transfer, utils.Wrap(err, "GetSheetAndMaterialInfoBySheetID failed")
 }
-func (s *SheetAndMaterial)DeleteSheetAndMaterialInfoBySheetIDAndVersion(sheetID string,version int32) error {
+func (s *SheetAndMaterial) DeleteSheetAndMaterialInfoBySheetIDAndVersion(sheetID string, version int32) error {
 	return DB.MysqlDB.db.Where("sheet_id=? and version=? ", sheetID, version).Delete(&SheetAndMaterial{}).Error
 }
 
-func (s *SheetAndMaterial)DecrMaterialQuantity(sheetID string,version int32,materialKey string,materialStandard string,quantity int32) error {
-	c := SheetAndMaterial{SheetID: sheetID,Version: version,MaterialKey: materialKey,MaterialStandard: materialStandard}
+func (s *SheetAndMaterial) DecrMaterialQuantity(sheetID string, version int32, materialKey string, materialStandard string, quantity int32) error {
+	c := SheetAndMaterial{SheetID: sheetID, Version: version, MaterialKey: materialKey, MaterialStandard: materialStandard}
 	return DB.MysqlDB.db.Model(&c).Update("quantity", gorm.Expr("quantity-?", quantity)).Error
 }
