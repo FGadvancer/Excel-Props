@@ -52,7 +52,7 @@ func (t *TemplateMaterial) DeleteAllTemplateMaterial() error {
 }
 func (t *TemplateMaterial) GetAllMaterialTemplates() ([]*TemplateMaterial, error) {
 	var templateList []TemplateMaterial
-	err := utils.Wrap(DB.MysqlDB.db.Find(&templateList).Order("index ASC").Error,
+	err := utils.Wrap(DB.MysqlDB.db.Debug().Find(&templateList).Order("index ASC").Error,
 		"GetAllMaterialTemplates failed")
 	var transfer []*TemplateMaterial
 	for _, v := range templateList {
