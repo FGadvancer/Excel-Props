@@ -62,7 +62,7 @@ func (s *SheetAndMaterial) UpdateSheetAndMaterial(material *SheetAndMaterial) er
 
 func (s *SheetAndMaterial) GetSheetAndMaterialInfoBySheetID(sheetID string) ([]*SheetAndMaterial, error) {
 	var temp []SheetAndMaterial
-	err := DB.MysqlDB.db.Debug().Model(&temp).Where("sheet_id = ?", sheetID).Find(&temp).Error
+	err := DB.MysqlDB.db.Debug().Model(&temp).Where("sheet_id = ?", sheetID).Order("last_modify_time DESC").Find(&temp).Error
 
 	var transfer []*SheetAndMaterial
 	for _, v := range temp {

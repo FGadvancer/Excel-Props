@@ -8,6 +8,7 @@ import (
 
 //料件模板表
 type TemplateMaterial struct {
+	Index              int32    `gorm:"column:index" json:"index"`
 	MaterialKey        string   `gorm:"column:material_key;primary_key;type:char(64)" json:"materialKey"`
 	MaterialStandard   string   `gorm:"column:material_standard;type:varchar(64)" json:"materialStandard"`
 	MaterialCategory   string   `gorm:"column:material_category;type:varchar(64)" json:"materialCategory"`
@@ -45,13 +46,13 @@ func (t *TemplateMaterial) GetMaterialInfo(materialKey string) (*TemplateMateria
 	err := DB.MysqlDB.db.Model(&temp).Where("material_key = ?", materialKey).Take(&temp).Error
 	return &temp, utils.Wrap(err, "")
 }
-func (t *TemplateMaterial) DeleteAllTemplateMaterial()  error {
+func (t *TemplateMaterial) DeleteAllTemplateMaterial() error {
 	err := DB.MysqlDB.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&TemplateMaterial{}).Error
-	return  utils.Wrap(err, "")
+	return utils.Wrap(err, "")
 }
 func (t *TemplateMaterial) GetAllMaterialTemplates() ([]*TemplateMaterial, error) {
 	var templateList []TemplateMaterial
-	err := utils.Wrap(DB.MysqlDB.db.Find(&templateList).Error,
+	err := utils.Wrap(DB.MysqlDB.db.Order("index ASC").Find(&templateList).Error,
 		"GetAllMaterialTemplates failed")
 	var transfer []*TemplateMaterial
 	for _, v := range templateList {
